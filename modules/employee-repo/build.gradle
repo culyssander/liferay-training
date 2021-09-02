@@ -1,6 +1,0 @@
-dependencies {
-	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
-	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
-	compileOnly project(":modules:employee-api")	
-	compileOnly project(":modules:employee-model")	
-}

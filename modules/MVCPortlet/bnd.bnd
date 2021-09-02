@@ -1,4 +1,0 @@
-Bundle-Name: MVCPortlet
-Bundle-SymbolicName: com.liferay.training.portlet.employeemanager
-Bundle-Version: 1.0.0
-Export-Package: com.liferay.training.portlet.employeemanager.constants
