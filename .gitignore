@@ -1,5 +1,5 @@
-/RemoteSystemsTempFiles/
-/.metadata/
+/.metadata
+/RemoteSystemsTempFiles
 /gradebook-workspace/**/*.iml
 /gradebook-workspace/**/.ivy
 /gradebook-workspace/**/.classpath
