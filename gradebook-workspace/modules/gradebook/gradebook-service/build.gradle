@@ -1,6 +1,6 @@
 dependencies {
 	compile project(":modules:gradebook:gradebook-api")
-
+	
 	compileOnly group: "biz.aQute.bnd", name: "biz.aQute.bnd.annotation", version: "5.2.0"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.io"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.string"

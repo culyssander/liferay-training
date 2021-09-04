@@ -2,49 +2,89 @@
 <!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.1.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_1_0.dtd">
 
 <service-builder  package-path="com.liferay.training.gradebook">
-	<namespace>FOO</namespace>
+	<namespace>Gradebook</namespace>
 	<!--<entity data-source="sampleDataSource" local-service="true" name="Foo" remote-service="false" session-factory="sampleSessionFactory" table="foo" tx-manager="sampleTransactionManager uuid="true"">-->
-	<entity local-service="true" name="Foo" remote-service="true" uuid="true">
+	<entity name="Assignment" local-service="true" uuid="true">
 
 		<!-- PK fields -->
 
-		<column name="fooId" primary="true" type="long" />
+		<column name="assignmentId" primary="true" type="long"></column>
 
 		<!-- Group instance -->
 
-		<column name="groupId" type="long" />
+		<column name="groupId" type="long"></column>
 
 		<!-- Audit fields -->
 
-		<column name="companyId" type="long" />
-		<column name="userId" type="long" />
-		<column name="userName" type="String" />
-		<column name="createDate" type="Date" />
-		<column name="modifiedDate" type="Date" />
-
-		<!-- Other fields -->
-
-		<column name="field1" type="String" />
-		<column name="field2" type="boolean" />
-		<column name="field3" type="int" />
-		<column name="field4" type="Date" />
-		<column name="field5" type="String" />
-
-		<!-- Order -->
-
-		<order by="asc">
-			<order-column name="field1" />
-		</order>
-
-		<!-- Finder methods -->
-
-		<finder name="Field2" return-type="Collection">
-			<finder-column name="field2" />
-		</finder>
-
-		<!-- References -->
-
-		<reference entity="AssetEntry" package-path="com.liferay.portlet.asset" />
-		<reference entity="AssetTag" package-path="com.liferay.portlet.asset" />
+		<column name="companyId" type="long"></column>
+		<column name="userId" type="long"></column>
+		<column name="userName" type="String"></column>
+		<column name="createDate" type="Date"></column>
+		<column name="modifiedDate" type="Date"></column>
+        <column name="title" type="String" localized="true"></column>
+        <column name="description" type="String"></column>
+        <column name="dueDate" type="Date"></column>
+        <column name="status" type="int"></column>
+        <column name="statusByUserId" type="long"></column>
+        <column name="statusByUserName" type="String"></column>
+        <column name="statusDate" type="Date"></column>
+        <finder name="GroupId" return-type="Collection">
+            <finder-column name="groupId"></finder-column>
+        </finder>
+        <finder name="Status" return-type="Collection">
+            <finder-column name="status"></finder-column>
+        </finder>
+        <finder name="G_S" return-type="Collection">
+            <finder-column name="groupId"></finder-column>
+            <finder-column name="status"></finder-column>
+        </finder>
+        <reference entity="Group" package-path="com.liferay.portal"></reference>
+        <reference entity="AssetEntry" package-path="com.liferay.portlet.asset"></reference>
+        <reference entity="AssetTag" package-path="com.liferay.portlet.asset"></reference>
+        <reference entity="WorkflowInstanceLink" package-path="com.liferay.portal"></reference>
 	</entity>
+	<entity name="Submission" local-service="true" uuid="true">
+
+		<!-- PK fields -->
+
+		<column name="submissionId" primary="true" type="long"></column>
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long"></column>
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long"></column>
+		<column name="userId" type="long"></column>
+		<column name="userName" type="String"></column>
+		<column name="createDate" type="Date"></column>
+		<column name="modifiedDate" type="Date"></column>
+        <column name="studentId" type="long"></column>
+        <column name="submitDate" type="Date"></column>
+        <column name="submisionText" type="String"></column>
+        <column name="comment" type="String"></column>
+        <column name="grade" type="int"></column>
+        <column name="assignmentId" type="long"></column>
+        <finder name="GroupId" return-type="Collection">
+            <finder-column name="groupId"></finder-column>
+        </finder>
+        <finder name="StudentId" return-type="Collection">
+            <finder-column name="studentId"></finder-column>
+        </finder>
+        <finder name="G_A" return-type="Collection">
+            <finder-column name="groupId"></finder-column>
+            <finder-column name="assignmentId"></finder-column>
+        </finder>
+        <finder name="StudentIdAssignmentId" return-type="Collection">
+            <finder-column name="studentId"></finder-column>
+            <finder-column name="assignmentId"></finder-column>
+        </finder>
+        <reference entity="AssetEntry" package-path="com.liferay.portlet.asset"></reference>
+        <reference entity="AssetTag" package-path="com.liferay.portlet.asset"></reference>
+	</entity>
+    <exceptions>
+        <exception>AssignmentValidator</exception>
+        <exception>SubmissionValidator</exception>
+    </exceptions>
 </service-builder>

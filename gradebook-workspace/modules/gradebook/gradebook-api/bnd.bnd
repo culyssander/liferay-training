@@ -5,6 +5,7 @@ Export-Package:\
 	com.liferay.training.gradebook.exception,\
 	com.liferay.training.gradebook.model,\
 	com.liferay.training.gradebook.service,\
-	com.liferay.training.gradebook.service.persistence
+	com.liferay.training.gradebook.service.persistence,\
+	com.liferay.training.gradebook.validator
 -check: EXPORTS
 -includeresource: META-INF/service.xml=../gradebook-service/service.xml

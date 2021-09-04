@@ -5,3 +5,7 @@ dependencies {
 	compileOnly group: "org.osgi", name: "org.osgi.core"
 	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
 }
+
+buildService {
+	apiDir = "../gradebook-api/src/main/java"
+}
