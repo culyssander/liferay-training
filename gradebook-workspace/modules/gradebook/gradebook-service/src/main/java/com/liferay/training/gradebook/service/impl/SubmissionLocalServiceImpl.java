@@ -76,6 +76,7 @@ public class SubmissionLocalServiceImpl extends SubmissionLocalServiceBaseImpl {
 		long userId = serviceContext.getUserId();
 
 		User user = userLocalService.getUserById(userId);
+//		User user = userLocalService.getUserById(userId);
 
 		//
 		// ( 3 ) - Get student user (studentId).

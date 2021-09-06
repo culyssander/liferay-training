@@ -30,6 +30,24 @@ public class SubmissionServiceWrapper
 		_submissionService = submissionService;
 	}
 
+	@Override
+	public com.liferay.training.gradebook.model.Submission addSubmission(
+			long assignmentId, long studentId, String submissionText,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _submissionService.addSubmission(
+			assignmentId, studentId, submissionText, serviceContext);
+	}
+
+	@Override
+	public com.liferay.training.gradebook.model.Submission deleteSubmission(
+			long submissionId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _submissionService.deleteSubmission(submissionId);
+	}
+
 	/**
 	 * Returns the OSGi service identifier.
 	 *
@@ -38,6 +56,59 @@ public class SubmissionServiceWrapper
 	@Override
 	public String getOSGiServiceIdentifier() {
 		return _submissionService.getOSGiServiceIdentifier();
+	}
+
+	@Override
+	public java.util.List<com.liferay.training.gradebook.model.Submission>
+		getSubmissionsByAssignment(long groupId, long assignmentId) {
+
+		return _submissionService.getSubmissionsByAssignment(
+			groupId, assignmentId);
+	}
+
+	@Override
+	public java.util.List<com.liferay.training.gradebook.model.Submission>
+		getSubmissionsByAssignment(
+			long groupId, long assignmentId, int start, int end) {
+
+		return _submissionService.getSubmissionsByAssignment(
+			groupId, assignmentId, start, end);
+	}
+
+	@Override
+	public int getSubmissionsCountByAssignment(
+		long groupId, long assignmentId) {
+
+		return _submissionService.getSubmissionsCountByAssignment(
+			groupId, assignmentId);
+	}
+
+	@Override
+	public com.liferay.training.gradebook.model.Submission
+			gradeAndCommentSubmission(
+				long submissionId, int grade, String comment)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _submissionService.gradeAndCommentSubmission(
+			submissionId, grade, comment);
+	}
+
+	@Override
+	public com.liferay.training.gradebook.model.Submission gradeSubmission(
+			long submissionId, int grade)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _submissionService.gradeSubmission(submissionId, grade);
+	}
+
+	@Override
+	public com.liferay.training.gradebook.model.Submission updateSubmission(
+			long submissionId, String submissionText,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _submissionService.updateSubmission(
+			submissionId, submissionText, serviceContext);
 	}
 
 	@Override

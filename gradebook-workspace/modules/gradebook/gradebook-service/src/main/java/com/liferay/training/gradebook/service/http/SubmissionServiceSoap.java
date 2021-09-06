@@ -14,9 +14,15 @@
 
 package com.liferay.training.gradebook.service.http;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.training.gradebook.service.SubmissionServiceUtil;
+
+import java.rmi.RemoteException;
+
 /**
  * Provides the SOAP utility for the
- * <code>com.liferay.training.gradebook.service.SubmissionServiceUtil</code> service
+ * <code>SubmissionServiceUtil</code> service
  * utility. The static methods of this class call the same methods of the
  * service utility. However, the signatures are different because it is
  * difficult for SOAP to support certain types.
@@ -56,4 +62,163 @@ package com.liferay.training.gradebook.service.http;
  */
 @Deprecated
 public class SubmissionServiceSoap {
+
+	public static com.liferay.training.gradebook.model.SubmissionSoap
+			addSubmission(
+				long assignmentId, long studentId, String submissionText,
+				com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws RemoteException {
+
+		try {
+			com.liferay.training.gradebook.model.Submission returnValue =
+				SubmissionServiceUtil.addSubmission(
+					assignmentId, studentId, submissionText, serviceContext);
+
+			return com.liferay.training.gradebook.model.SubmissionSoap.
+				toSoapModel(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static com.liferay.training.gradebook.model.SubmissionSoap
+			deleteSubmission(long submissionId)
+		throws RemoteException {
+
+		try {
+			com.liferay.training.gradebook.model.Submission returnValue =
+				SubmissionServiceUtil.deleteSubmission(submissionId);
+
+			return com.liferay.training.gradebook.model.SubmissionSoap.
+				toSoapModel(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static com.liferay.training.gradebook.model.SubmissionSoap[]
+			getSubmissionsByAssignment(long groupId, long assignmentId)
+		throws RemoteException {
+
+		try {
+			java.util.List<com.liferay.training.gradebook.model.Submission>
+				returnValue = SubmissionServiceUtil.getSubmissionsByAssignment(
+					groupId, assignmentId);
+
+			return com.liferay.training.gradebook.model.SubmissionSoap.
+				toSoapModels(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static com.liferay.training.gradebook.model.SubmissionSoap[]
+			getSubmissionsByAssignment(
+				long groupId, long assignmentId, int start, int end)
+		throws RemoteException {
+
+		try {
+			java.util.List<com.liferay.training.gradebook.model.Submission>
+				returnValue = SubmissionServiceUtil.getSubmissionsByAssignment(
+					groupId, assignmentId, start, end);
+
+			return com.liferay.training.gradebook.model.SubmissionSoap.
+				toSoapModels(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static int getSubmissionsCountByAssignment(
+			long groupId, long assignmentId)
+		throws RemoteException {
+
+		try {
+			int returnValue =
+				SubmissionServiceUtil.getSubmissionsCountByAssignment(
+					groupId, assignmentId);
+
+			return returnValue;
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static com.liferay.training.gradebook.model.SubmissionSoap
+			gradeAndCommentSubmission(
+				long submissionId, int grade, String comment)
+		throws RemoteException {
+
+		try {
+			com.liferay.training.gradebook.model.Submission returnValue =
+				SubmissionServiceUtil.gradeAndCommentSubmission(
+					submissionId, grade, comment);
+
+			return com.liferay.training.gradebook.model.SubmissionSoap.
+				toSoapModel(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static com.liferay.training.gradebook.model.SubmissionSoap
+			gradeSubmission(long submissionId, int grade)
+		throws RemoteException {
+
+		try {
+			com.liferay.training.gradebook.model.Submission returnValue =
+				SubmissionServiceUtil.gradeSubmission(submissionId, grade);
+
+			return com.liferay.training.gradebook.model.SubmissionSoap.
+				toSoapModel(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static com.liferay.training.gradebook.model.SubmissionSoap
+			updateSubmission(
+				long submissionId, String submissionText,
+				com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws RemoteException {
+
+		try {
+			com.liferay.training.gradebook.model.Submission returnValue =
+				SubmissionServiceUtil.updateSubmission(
+					submissionId, submissionText, serviceContext);
+
+			return com.liferay.training.gradebook.model.SubmissionSoap.
+				toSoapModel(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	private static Log _log = LogFactoryUtil.getLog(
+		SubmissionServiceSoap.class);
+
 }

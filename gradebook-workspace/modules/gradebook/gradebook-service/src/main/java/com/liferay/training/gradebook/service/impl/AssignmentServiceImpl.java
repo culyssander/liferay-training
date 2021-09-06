@@ -15,7 +15,6 @@
 package com.liferay.training.gradebook.service.impl;
 
 import com.liferay.portal.aop.AopService;
-import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.training.gradebook.model.Assignment;
@@ -55,15 +54,13 @@ public class AssignmentServiceImpl extends AssignmentServiceBaseImpl {
 	 * Never reference this class directly. Always use <code>com.liferay.training.gradebook.service.AssignmentServiceUtil</code> to access the assignment remote service.
 	 */
 	
-	@BeanReference
-	private AssignmentLocalServiceImpl assignmentLocalServiceImpl;
+//	@BeanReference
+//	private AssignmentLocalServiceImpl assignmentLocalServiceImpl;
 	
 	public Assignment addAssignment(long groupId, Map<Locale, String> title, String description, Date dueDate, ServiceContext serviceContext) throws PortalException {
 
 		// [Permission checks will be added here later]
-		
-		return assignmentLocalServiceImpl.addAssignment(groupId, title, description, dueDate, serviceContext);
-//		return assignmentLocalService.addAssignment(groupId, title, description, dueDate, serviceContext);
+		return assignmentLocalService.addAssignment(groupId, title, description, dueDate, serviceContext);
 	}
 	
 	public Assignment deleteAssignment(long assignmentId) throws PortalException {
@@ -86,8 +83,6 @@ public class AssignmentServiceImpl extends AssignmentServiceBaseImpl {
 	public Assignment updateAssignment(long assignmentId, Map<Locale, String> titleMap, String description, Date dueDate, ServiceContext serviceContext) throws PortalException {
 
 		// [Permission checks will be added here later]
-		
-//		return assignmentLocalService.updateAssignment(assignmentId, titleMap, description, dueDate, serviceContext);
-		return assignmentLocalServiceImpl.updateAssignment(assignmentId, titleMap, description, dueDate, serviceContext);
+		return assignmentLocalService.updateAssignment(assignmentId, titleMap, description, dueDate, serviceContext);
 	}
 }
