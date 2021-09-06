@@ -1,17 +1,7 @@
 dependencies {
 	compile project(":modules:gradebook:gradebook-api")
-	
-	compileOnly group: "biz.aQute.bnd", name: "biz.aQute.bnd.annotation", version: "5.2.0"
-	compileOnly group: "com.liferay", name: "com.liferay.petra.io"
-	compileOnly group: "com.liferay", name: "com.liferay.petra.string"
-	compileOnly group: "com.liferay", name: "com.liferay.portal.spring.extender.api"
-	//compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
-	compileOnly files("../../../bundles/tomcat-9.0.43/lib/ext/portal-kernel.jar")
-	compileOnly files("../../../bundles/tomcat-9.0.43/lib/ext/portlet.jar")
-	compileOnly group: "org.osgi", name: "org.osgi.core"
-	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
-	
-	compileOnly group: "javax.servlet", name: "servlet-api", version: "3.1"
+
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
 }
 
 buildService {

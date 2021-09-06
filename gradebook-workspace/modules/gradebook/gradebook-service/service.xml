@@ -1,26 +1,26 @@
 <?xml version="1.0"?>
-<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.1.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_1_0.dtd">
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.3.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_3_0.dtd">
 
-<service-builder  package-path="com.liferay.training.gradebook">
-	<namespace>Gradebook</namespace>
+<service-builder dependency-injector="ds" package-path="com.liferay.training.gradebook">
 	<!--<entity data-source="sampleDataSource" local-service="true" name="Foo" remote-service="false" session-factory="sampleSessionFactory" table="foo" tx-manager="sampleTransactionManager uuid="true"">-->
-	<entity name="Assignment" local-service="true" uuid="true">
+    <namespace>Gradebook</namespace>
+    <entity name="Assignment" local-service="true" uuid="true">
 
-		<!-- PK fields -->
+    	<!-- PK fields -->
 
-		<column name="assignmentId" primary="true" type="long"></column>
+    	<column name="assignmentId" primary="true" type="long"></column>
 
-		<!-- Group instance -->
+    	<!-- Group instance -->
 
-		<column name="groupId" type="long"></column>
+    	<column name="groupId" type="long"></column>
 
-		<!-- Audit fields -->
+    	<!-- Audit fields -->
 
-		<column name="companyId" type="long"></column>
-		<column name="userId" type="long"></column>
-		<column name="userName" type="String"></column>
-		<column name="createDate" type="Date"></column>
-		<column name="modifiedDate" type="Date"></column>
+    	<column name="companyId" type="long"></column>
+    	<column name="userId" type="long"></column>
+    	<column name="userName" type="String"></column>
+    	<column name="createDate" type="Date"></column>
+    	<column name="modifiedDate" type="Date"></column>
         <column name="title" type="String" localized="true"></column>
         <column name="description" type="String"></column>
         <column name="dueDate" type="Date"></column>
@@ -42,35 +42,32 @@
         <reference entity="AssetEntry" package-path="com.liferay.portlet.asset"></reference>
         <reference entity="AssetTag" package-path="com.liferay.portlet.asset"></reference>
         <reference entity="WorkflowInstanceLink" package-path="com.liferay.portal"></reference>
-	</entity>
-	<entity name="Submission" local-service="true" uuid="true">
+    </entity>
+    <entity name="Submission" local-service="true" uuid="true">
 
-		<!-- PK fields -->
+    	<!-- PK fields -->
 
-		<column name="submissionId" primary="true" type="long"></column>
+    	<column name="submissionId" primary="true" type="long"></column>
 
-		<!-- Group instance -->
+    	<!-- Group instance -->
 
-		<column name="groupId" type="long"></column>
+    	<column name="groupId" type="long"></column>
 
-		<!-- Audit fields -->
+    	<!-- Audit fields -->
 
-		<column name="companyId" type="long"></column>
-		<column name="userId" type="long"></column>
-		<column name="userName" type="String"></column>
-		<column name="createDate" type="Date"></column>
-		<column name="modifiedDate" type="Date"></column>
+    	<column name="companyId" type="long"></column>
+    	<column name="userId" type="long"></column>
+    	<column name="userName" type="String"></column>
+    	<column name="createDate" type="Date"></column>
+    	<column name="modifiedDate" type="Date"></column>
         <column name="studentId" type="long"></column>
         <column name="submitDate" type="Date"></column>
-        <column name="submisionText" type="String"></column>
+        <column name="submissionText" type="String"></column>
         <column name="comment" type="String"></column>
         <column name="grade" type="int"></column>
         <column name="assignmentId" type="long"></column>
         <finder name="GroupId" return-type="Collection">
             <finder-column name="groupId"></finder-column>
-        </finder>
-        <finder name="StudentId" return-type="Collection">
-            <finder-column name="studentId"></finder-column>
         </finder>
         <finder name="G_A" return-type="Collection">
             <finder-column name="groupId"></finder-column>
@@ -82,7 +79,7 @@
         </finder>
         <reference entity="AssetEntry" package-path="com.liferay.portlet.asset"></reference>
         <reference entity="AssetTag" package-path="com.liferay.portlet.asset"></reference>
-	</entity>
+    </entity>
     <exceptions>
         <exception>AssignmentValidator</exception>
         <exception>SubmissionValidator</exception>

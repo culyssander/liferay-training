@@ -1213,10 +1213,6 @@ public class AssignmentUtil {
 		return getPersistence().countAll();
 	}
 
-	public static Set<String> getBadColumnNames() {
-		return getPersistence().getBadColumnNames();
-	}
-
 	public static AssignmentPersistence getPersistence() {
 		return _serviceTracker.getService();
 	}

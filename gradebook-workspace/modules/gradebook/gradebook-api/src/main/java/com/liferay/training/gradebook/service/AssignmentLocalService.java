@@ -14,8 +14,6 @@
 
 package com.liferay.training.gradebook.service;
 
-import aQute.bnd.annotation.ProviderType;
-
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -42,6 +40,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * Provides the local service interface for Assignment. Methods of this
@@ -93,6 +93,12 @@ public interface AssignmentLocalService
 	 */
 	@Transactional(enabled = false)
 	public Assignment createAssignment(long assignmentId);
+
+	/**
+	 * @throws PortalException
+	 */
+	public PersistedModel createPersistedModel(Serializable primaryKeyObj)
+		throws PortalException;
 
 	/**
 	 * Deletes the assignment from the database. Also notifies the appropriate model listeners.

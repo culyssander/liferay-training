@@ -24,8 +24,10 @@ import java.util.List;
  * This class is used by SOAP remote services, specifically {@link com.liferay.training.gradebook.service.http.AssignmentServiceSoap}.
  *
  * @author Brian Wing Shun Chan
+ * @deprecated As of Athanasius (7.3.x), with no direct replacement
  * @generated
  */
+@Deprecated
 public class AssignmentSoap implements Serializable {
 
 	public static AssignmentSoap toSoapModel(Assignment model) {

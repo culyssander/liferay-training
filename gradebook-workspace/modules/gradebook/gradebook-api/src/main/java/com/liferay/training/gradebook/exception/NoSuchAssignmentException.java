@@ -20,6 +20,8 @@ import com.liferay.portal.kernel.exception.NoSuchModelException;
  */
 public class NoSuchAssignmentException extends NoSuchModelException {
 
+	private static final long serialVersionUID = 1L;
+
 	public NoSuchAssignmentException() {
 	}
 

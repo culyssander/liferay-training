@@ -80,6 +80,16 @@ public class AssignmentLocalServiceUtil {
 	}
 
 	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel createPersistedModel(
+			Serializable primaryKeyObj)
+		throws PortalException {
+
+		return getService().createPersistedModel(primaryKeyObj);
+	}
+
+	/**
 	 * Deletes the assignment from the database. Also notifies the appropriate model listeners.
 	 *
 	 * <p>

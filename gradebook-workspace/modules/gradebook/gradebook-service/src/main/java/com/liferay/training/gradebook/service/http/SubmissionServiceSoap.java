@@ -51,7 +51,9 @@ package com.liferay.training.gradebook.service.http;
  *
  * @author Brian Wing Shun Chan
  * @see SubmissionServiceHttp
+ * @deprecated As of Athanasius (7.3.x), with no direct replacement
  * @generated
  */
+@Deprecated
 public class SubmissionServiceSoap {
 }

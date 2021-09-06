@@ -67,6 +67,16 @@ public class SubmissionLocalServiceUtil {
 	}
 
 	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel createPersistedModel(
+			Serializable primaryKeyObj)
+		throws PortalException {
+
+		return getService().createPersistedModel(primaryKeyObj);
+	}
+
+	/**
 	 * Creates a new submission with the primary key. Does not add the submission to the database.
 	 *
 	 * @param submissionId the primary key for the new submission

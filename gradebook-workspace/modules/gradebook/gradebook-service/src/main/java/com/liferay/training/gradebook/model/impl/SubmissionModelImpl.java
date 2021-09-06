@@ -17,6 +17,7 @@ package com.liferay.training.gradebook.model.impl;
 import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.expando.kernel.util.ExpandoBridgeFactoryUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSON;
@@ -29,7 +30,6 @@ import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.training.gradebook.model.Submission;
 import com.liferay.training.gradebook.model.SubmissionModel;
 import com.liferay.training.gradebook.model.SubmissionSoap;
@@ -79,7 +79,7 @@ public class SubmissionModelImpl
 		{"userId", Types.BIGINT}, {"userName", Types.VARCHAR},
 		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP},
 		{"studentId", Types.BIGINT}, {"submitDate", Types.TIMESTAMP},
-		{"submisionText", Types.VARCHAR}, {"comment_", Types.VARCHAR},
+		{"submissionText", Types.VARCHAR}, {"comment_", Types.VARCHAR},
 		{"grade", Types.INTEGER}, {"assignmentId", Types.BIGINT}
 	};
 
@@ -97,14 +97,14 @@ public class SubmissionModelImpl
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("studentId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("submitDate", Types.TIMESTAMP);
-		TABLE_COLUMNS_MAP.put("submisionText", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("submissionText", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("comment_", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("grade", Types.INTEGER);
 		TABLE_COLUMNS_MAP.put("assignmentId", Types.BIGINT);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table Gradebook_Submission (uuid_ VARCHAR(75) null,submissionId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,studentId LONG,submitDate DATE null,submisionText VARCHAR(75) null,comment_ VARCHAR(75) null,grade INTEGER,assignmentId LONG)";
+		"create table Gradebook_Submission (uuid_ VARCHAR(75) null,submissionId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,studentId LONG,submitDate DATE null,submissionText VARCHAR(75) null,comment_ VARCHAR(75) null,grade INTEGER,assignmentId LONG)";
 
 	public static final String TABLE_SQL_DROP =
 		"drop table Gradebook_Submission";
@@ -121,39 +121,65 @@ public class SubmissionModelImpl
 
 	public static final String TX_MANAGER = "liferayTransactionManager";
 
-	public static final boolean ENTITY_CACHE_ENABLED = GetterUtil.getBoolean(
-		com.liferay.training.gradebook.service.util.ServiceProps.get(
-			"value.object.entity.cache.enabled.com.liferay.training.gradebook.model.Submission"),
-		true);
-
-	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(
-		com.liferay.training.gradebook.service.util.ServiceProps.get(
-			"value.object.finder.cache.enabled.com.liferay.training.gradebook.model.Submission"),
-		true);
-
-	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(
-		com.liferay.training.gradebook.service.util.ServiceProps.get(
-			"value.object.column.bitmask.enabled.com.liferay.training.gradebook.model.Submission"),
-		true);
-
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
 	public static final long ASSIGNMENTID_COLUMN_BITMASK = 1L;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
 	public static final long COMPANYID_COLUMN_BITMASK = 2L;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
 	public static final long GROUPID_COLUMN_BITMASK = 4L;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
 	public static final long STUDENTID_COLUMN_BITMASK = 8L;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
 	public static final long UUID_COLUMN_BITMASK = 16L;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *		#getColumnBitmask(String)}
+	 */
+	@Deprecated
 	public static final long SUBMISSIONID_COLUMN_BITMASK = 32L;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
+	public static void setEntityCacheEnabled(boolean entityCacheEnabled) {
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
+	public static void setFinderCacheEnabled(boolean finderCacheEnabled) {
+	}
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
 	 *
 	 * @param soapModel the soap model instance to convert
 	 * @return the normal model instance
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
 	 */
+	@Deprecated
 	public static Submission toModel(SubmissionSoap soapModel) {
 		if (soapModel == null) {
 			return null;
@@ -171,7 +197,7 @@ public class SubmissionModelImpl
 		model.setModifiedDate(soapModel.getModifiedDate());
 		model.setStudentId(soapModel.getStudentId());
 		model.setSubmitDate(soapModel.getSubmitDate());
-		model.setSubmisionText(soapModel.getSubmisionText());
+		model.setSubmissionText(soapModel.getSubmissionText());
 		model.setComment(soapModel.getComment());
 		model.setGrade(soapModel.getGrade());
 		model.setAssignmentId(soapModel.getAssignmentId());
@@ -184,7 +210,9 @@ public class SubmissionModelImpl
 	 *
 	 * @param soapModels the soap model instances to convert
 	 * @return the normal model instances
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
 	 */
+	@Deprecated
 	public static List<Submission> toModels(SubmissionSoap[] soapModels) {
 		if (soapModels == null) {
 			return null;
@@ -198,10 +226,6 @@ public class SubmissionModelImpl
 
 		return models;
 	}
-
-	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(
-		com.liferay.training.gradebook.service.util.ServiceProps.get(
-			"lock.expiration.time.com.liferay.training.gradebook.model.Submission"));
 
 	public SubmissionModelImpl() {
 	}
@@ -253,9 +277,6 @@ public class SubmissionModelImpl
 			attributes.put(
 				attributeName, attributeGetterFunction.apply((Submission)this));
 		}
-
-		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
-		attributes.put("finderCacheEnabled", isFinderCacheEnabled());
 
 		return attributes;
 	}
@@ -329,308 +350,61 @@ public class SubmissionModelImpl
 		Map<String, BiConsumer<Submission, ?>> attributeSetterBiConsumers =
 			new LinkedHashMap<String, BiConsumer<Submission, ?>>();
 
-		attributeGetterFunctions.put(
-			"uuid",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getUuid();
-				}
-
-			});
+		attributeGetterFunctions.put("uuid", Submission::getUuid);
 		attributeSetterBiConsumers.put(
-			"uuid",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(Submission submission, Object uuidObject) {
-					submission.setUuid((String)uuidObject);
-				}
-
-			});
+			"uuid", (BiConsumer<Submission, String>)Submission::setUuid);
 		attributeGetterFunctions.put(
-			"submissionId",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getSubmissionId();
-				}
-
-			});
+			"submissionId", Submission::getSubmissionId);
 		attributeSetterBiConsumers.put(
 			"submissionId",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(
-					Submission submission, Object submissionIdObject) {
-
-					submission.setSubmissionId((Long)submissionIdObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"groupId",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getGroupId();
-				}
-
-			});
+			(BiConsumer<Submission, Long>)Submission::setSubmissionId);
+		attributeGetterFunctions.put("groupId", Submission::getGroupId);
 		attributeSetterBiConsumers.put(
-			"groupId",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(
-					Submission submission, Object groupIdObject) {
-
-					submission.setGroupId((Long)groupIdObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"companyId",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getCompanyId();
-				}
-
-			});
+			"groupId", (BiConsumer<Submission, Long>)Submission::setGroupId);
+		attributeGetterFunctions.put("companyId", Submission::getCompanyId);
 		attributeSetterBiConsumers.put(
 			"companyId",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(
-					Submission submission, Object companyIdObject) {
-
-					submission.setCompanyId((Long)companyIdObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"userId",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getUserId();
-				}
-
-			});
+			(BiConsumer<Submission, Long>)Submission::setCompanyId);
+		attributeGetterFunctions.put("userId", Submission::getUserId);
 		attributeSetterBiConsumers.put(
-			"userId",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(Submission submission, Object userIdObject) {
-					submission.setUserId((Long)userIdObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"userName",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getUserName();
-				}
-
-			});
+			"userId", (BiConsumer<Submission, Long>)Submission::setUserId);
+		attributeGetterFunctions.put("userName", Submission::getUserName);
 		attributeSetterBiConsumers.put(
 			"userName",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(
-					Submission submission, Object userNameObject) {
-
-					submission.setUserName((String)userNameObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"createDate",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getCreateDate();
-				}
-
-			});
+			(BiConsumer<Submission, String>)Submission::setUserName);
+		attributeGetterFunctions.put("createDate", Submission::getCreateDate);
 		attributeSetterBiConsumers.put(
 			"createDate",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(
-					Submission submission, Object createDateObject) {
-
-					submission.setCreateDate((Date)createDateObject);
-				}
-
-			});
+			(BiConsumer<Submission, Date>)Submission::setCreateDate);
 		attributeGetterFunctions.put(
-			"modifiedDate",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getModifiedDate();
-				}
-
-			});
+			"modifiedDate", Submission::getModifiedDate);
 		attributeSetterBiConsumers.put(
 			"modifiedDate",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(
-					Submission submission, Object modifiedDateObject) {
-
-					submission.setModifiedDate((Date)modifiedDateObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"studentId",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getStudentId();
-				}
-
-			});
+			(BiConsumer<Submission, Date>)Submission::setModifiedDate);
+		attributeGetterFunctions.put("studentId", Submission::getStudentId);
 		attributeSetterBiConsumers.put(
 			"studentId",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(
-					Submission submission, Object studentIdObject) {
-
-					submission.setStudentId((Long)studentIdObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"submitDate",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getSubmitDate();
-				}
-
-			});
+			(BiConsumer<Submission, Long>)Submission::setStudentId);
+		attributeGetterFunctions.put("submitDate", Submission::getSubmitDate);
 		attributeSetterBiConsumers.put(
 			"submitDate",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(
-					Submission submission, Object submitDateObject) {
-
-					submission.setSubmitDate((Date)submitDateObject);
-				}
-
-			});
+			(BiConsumer<Submission, Date>)Submission::setSubmitDate);
 		attributeGetterFunctions.put(
-			"submisionText",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getSubmisionText();
-				}
-
-			});
+			"submissionText", Submission::getSubmissionText);
 		attributeSetterBiConsumers.put(
-			"submisionText",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(
-					Submission submission, Object submisionTextObject) {
-
-					submission.setSubmisionText((String)submisionTextObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"comment",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getComment();
-				}
-
-			});
+			"submissionText",
+			(BiConsumer<Submission, String>)Submission::setSubmissionText);
+		attributeGetterFunctions.put("comment", Submission::getComment);
 		attributeSetterBiConsumers.put(
-			"comment",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(
-					Submission submission, Object commentObject) {
-
-					submission.setComment((String)commentObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"grade",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getGrade();
-				}
-
-			});
+			"comment", (BiConsumer<Submission, String>)Submission::setComment);
+		attributeGetterFunctions.put("grade", Submission::getGrade);
 		attributeSetterBiConsumers.put(
-			"grade",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(Submission submission, Object gradeObject) {
-					submission.setGrade((Integer)gradeObject);
-				}
-
-			});
+			"grade", (BiConsumer<Submission, Integer>)Submission::setGrade);
 		attributeGetterFunctions.put(
-			"assignmentId",
-			new Function<Submission, Object>() {
-
-				@Override
-				public Object apply(Submission submission) {
-					return submission.getAssignmentId();
-				}
-
-			});
+			"assignmentId", Submission::getAssignmentId);
 		attributeSetterBiConsumers.put(
 			"assignmentId",
-			new BiConsumer<Submission, Object>() {
-
-				@Override
-				public void accept(
-					Submission submission, Object assignmentIdObject) {
-
-					submission.setAssignmentId((Long)assignmentIdObject);
-				}
-
-			});
+			(BiConsumer<Submission, Long>)Submission::setAssignmentId);
 
 		_attributeGetterFunctions = Collections.unmodifiableMap(
 			attributeGetterFunctions);
@@ -651,17 +425,20 @@ public class SubmissionModelImpl
 
 	@Override
 	public void setUuid(String uuid) {
-		_columnBitmask |= UUID_COLUMN_BITMASK;
-
-		if (_originalUuid == null) {
-			_originalUuid = _uuid;
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
 		}
 
 		_uuid = uuid;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
 	public String getOriginalUuid() {
-		return GetterUtil.getString(_originalUuid);
+		return getColumnOriginalValue("uuid_");
 	}
 
 	@JSON
@@ -672,6 +449,10 @@ public class SubmissionModelImpl
 
 	@Override
 	public void setSubmissionId(long submissionId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_submissionId = submissionId;
 	}
 
@@ -683,19 +464,20 @@ public class SubmissionModelImpl
 
 	@Override
 	public void setGroupId(long groupId) {
-		_columnBitmask |= GROUPID_COLUMN_BITMASK;
-
-		if (!_setOriginalGroupId) {
-			_setOriginalGroupId = true;
-
-			_originalGroupId = _groupId;
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
 		}
 
 		_groupId = groupId;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
 	public long getOriginalGroupId() {
-		return _originalGroupId;
+		return GetterUtil.getLong(this.<Long>getColumnOriginalValue("groupId"));
 	}
 
 	@JSON
@@ -706,19 +488,21 @@ public class SubmissionModelImpl
 
 	@Override
 	public void setCompanyId(long companyId) {
-		_columnBitmask |= COMPANYID_COLUMN_BITMASK;
-
-		if (!_setOriginalCompanyId) {
-			_setOriginalCompanyId = true;
-
-			_originalCompanyId = _companyId;
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
 		}
 
 		_companyId = companyId;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
 	public long getOriginalCompanyId() {
-		return _originalCompanyId;
+		return GetterUtil.getLong(
+			this.<Long>getColumnOriginalValue("companyId"));
 	}
 
 	@JSON
@@ -729,6 +513,10 @@ public class SubmissionModelImpl
 
 	@Override
 	public void setUserId(long userId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_userId = userId;
 	}
 
@@ -761,6 +549,10 @@ public class SubmissionModelImpl
 
 	@Override
 	public void setUserName(String userName) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_userName = userName;
 	}
 
@@ -772,6 +564,10 @@ public class SubmissionModelImpl
 
 	@Override
 	public void setCreateDate(Date createDate) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_createDate = createDate;
 	}
 
@@ -789,6 +585,10 @@ public class SubmissionModelImpl
 	public void setModifiedDate(Date modifiedDate) {
 		_setModifiedDate = true;
 
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_modifiedDate = modifiedDate;
 	}
 
@@ -800,19 +600,21 @@ public class SubmissionModelImpl
 
 	@Override
 	public void setStudentId(long studentId) {
-		_columnBitmask |= STUDENTID_COLUMN_BITMASK;
-
-		if (!_setOriginalStudentId) {
-			_setOriginalStudentId = true;
-
-			_originalStudentId = _studentId;
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
 		}
 
 		_studentId = studentId;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
 	public long getOriginalStudentId() {
-		return _originalStudentId;
+		return GetterUtil.getLong(
+			this.<Long>getColumnOriginalValue("studentId"));
 	}
 
 	@JSON
@@ -823,23 +625,31 @@ public class SubmissionModelImpl
 
 	@Override
 	public void setSubmitDate(Date submitDate) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_submitDate = submitDate;
 	}
 
 	@JSON
 	@Override
-	public String getSubmisionText() {
-		if (_submisionText == null) {
+	public String getSubmissionText() {
+		if (_submissionText == null) {
 			return "";
 		}
 		else {
-			return _submisionText;
+			return _submissionText;
 		}
 	}
 
 	@Override
-	public void setSubmisionText(String submisionText) {
-		_submisionText = submisionText;
+	public void setSubmissionText(String submissionText) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_submissionText = submissionText;
 	}
 
 	@JSON
@@ -855,6 +665,10 @@ public class SubmissionModelImpl
 
 	@Override
 	public void setComment(String comment) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_comment = comment;
 	}
 
@@ -866,6 +680,10 @@ public class SubmissionModelImpl
 
 	@Override
 	public void setGrade(int grade) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_grade = grade;
 	}
 
@@ -877,19 +695,21 @@ public class SubmissionModelImpl
 
 	@Override
 	public void setAssignmentId(long assignmentId) {
-		_columnBitmask |= ASSIGNMENTID_COLUMN_BITMASK;
-
-		if (!_setOriginalAssignmentId) {
-			_setOriginalAssignmentId = true;
-
-			_originalAssignmentId = _assignmentId;
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
 		}
 
 		_assignmentId = assignmentId;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
 	public long getOriginalAssignmentId() {
-		return _originalAssignmentId;
+		return GetterUtil.getLong(
+			this.<Long>getColumnOriginalValue("assignmentId"));
 	}
 
 	@Override
@@ -899,6 +719,24 @@ public class SubmissionModelImpl
 	}
 
 	public long getColumnBitmask() {
+		if (_columnBitmask > 0) {
+			return _columnBitmask;
+		}
+
+		if ((_columnOriginalValues == null) ||
+			(_columnOriginalValues == Collections.EMPTY_MAP)) {
+
+			return 0;
+		}
+
+		for (Map.Entry<String, Object> entry :
+				_columnOriginalValues.entrySet()) {
+
+			if (entry.getValue() != getColumnValue(entry.getKey())) {
+				_columnBitmask |= _columnBitmasks.get(entry.getKey());
+			}
+		}
+
 		return _columnBitmask;
 	}
 
@@ -944,7 +782,7 @@ public class SubmissionModelImpl
 		submissionImpl.setModifiedDate(getModifiedDate());
 		submissionImpl.setStudentId(getStudentId());
 		submissionImpl.setSubmitDate(getSubmitDate());
-		submissionImpl.setSubmisionText(getSubmisionText());
+		submissionImpl.setSubmissionText(getSubmissionText());
 		submissionImpl.setComment(getComment());
 		submissionImpl.setGrade(getGrade());
 		submissionImpl.setAssignmentId(getAssignmentId());
@@ -996,36 +834,29 @@ public class SubmissionModelImpl
 		return (int)getPrimaryKey();
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public boolean isEntityCacheEnabled() {
-		return ENTITY_CACHE_ENABLED;
+		return true;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public boolean isFinderCacheEnabled() {
-		return FINDER_CACHE_ENABLED;
+		return true;
 	}
 
 	@Override
 	public void resetOriginalValues() {
-		_originalUuid = _uuid;
-
-		_originalGroupId = _groupId;
-
-		_setOriginalGroupId = false;
-
-		_originalCompanyId = _companyId;
-
-		_setOriginalCompanyId = false;
+		_columnOriginalValues = Collections.emptyMap();
 
 		_setModifiedDate = false;
-		_originalStudentId = _studentId;
-
-		_setOriginalStudentId = false;
-
-		_originalAssignmentId = _assignmentId;
-
-		_setOriginalAssignmentId = false;
 
 		_columnBitmask = 0;
 	}
@@ -1087,12 +918,12 @@ public class SubmissionModelImpl
 			submissionCacheModel.submitDate = Long.MIN_VALUE;
 		}
 
-		submissionCacheModel.submisionText = getSubmisionText();
+		submissionCacheModel.submissionText = getSubmissionText();
 
-		String submisionText = submissionCacheModel.submisionText;
+		String submissionText = submissionCacheModel.submissionText;
 
-		if ((submisionText != null) && (submisionText.length() == 0)) {
-			submissionCacheModel.submisionText = null;
+		if ((submissionText != null) && (submissionText.length() == 0)) {
+			submissionCacheModel.submissionText = null;
 		}
 
 		submissionCacheModel.comment = getComment();
@@ -1181,29 +1012,119 @@ public class SubmissionModelImpl
 	}
 
 	private String _uuid;
-	private String _originalUuid;
 	private long _submissionId;
 	private long _groupId;
-	private long _originalGroupId;
-	private boolean _setOriginalGroupId;
 	private long _companyId;
-	private long _originalCompanyId;
-	private boolean _setOriginalCompanyId;
 	private long _userId;
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
 	private long _studentId;
-	private long _originalStudentId;
-	private boolean _setOriginalStudentId;
 	private Date _submitDate;
-	private String _submisionText;
+	private String _submissionText;
 	private String _comment;
 	private int _grade;
 	private long _assignmentId;
-	private long _originalAssignmentId;
-	private boolean _setOriginalAssignmentId;
+
+	public <T> T getColumnValue(String columnName) {
+		columnName = _attributeNames.getOrDefault(columnName, columnName);
+
+		Function<Submission, Object> function = _attributeGetterFunctions.get(
+			columnName);
+
+		if (function == null) {
+			throw new IllegalArgumentException(
+				"No attribute getter function found for " + columnName);
+		}
+
+		return (T)function.apply((Submission)this);
+	}
+
+	public <T> T getColumnOriginalValue(String columnName) {
+		if (_columnOriginalValues == null) {
+			return null;
+		}
+
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		return (T)_columnOriginalValues.get(columnName);
+	}
+
+	private void _setColumnOriginalValues() {
+		_columnOriginalValues = new HashMap<String, Object>();
+
+		_columnOriginalValues.put("uuid_", _uuid);
+		_columnOriginalValues.put("submissionId", _submissionId);
+		_columnOriginalValues.put("groupId", _groupId);
+		_columnOriginalValues.put("companyId", _companyId);
+		_columnOriginalValues.put("userId", _userId);
+		_columnOriginalValues.put("userName", _userName);
+		_columnOriginalValues.put("createDate", _createDate);
+		_columnOriginalValues.put("modifiedDate", _modifiedDate);
+		_columnOriginalValues.put("studentId", _studentId);
+		_columnOriginalValues.put("submitDate", _submitDate);
+		_columnOriginalValues.put("submissionText", _submissionText);
+		_columnOriginalValues.put("comment_", _comment);
+		_columnOriginalValues.put("grade", _grade);
+		_columnOriginalValues.put("assignmentId", _assignmentId);
+	}
+
+	private static final Map<String, String> _attributeNames;
+
+	static {
+		Map<String, String> attributeNames = new HashMap<>();
+
+		attributeNames.put("uuid_", "uuid");
+		attributeNames.put("comment_", "comment");
+
+		_attributeNames = Collections.unmodifiableMap(attributeNames);
+	}
+
+	private transient Map<String, Object> _columnOriginalValues;
+
+	public static long getColumnBitmask(String columnName) {
+		return _columnBitmasks.get(columnName);
+	}
+
+	private static final Map<String, Long> _columnBitmasks;
+
+	static {
+		Map<String, Long> columnBitmasks = new HashMap<>();
+
+		columnBitmasks.put("uuid_", 1L);
+
+		columnBitmasks.put("submissionId", 2L);
+
+		columnBitmasks.put("groupId", 4L);
+
+		columnBitmasks.put("companyId", 8L);
+
+		columnBitmasks.put("userId", 16L);
+
+		columnBitmasks.put("userName", 32L);
+
+		columnBitmasks.put("createDate", 64L);
+
+		columnBitmasks.put("modifiedDate", 128L);
+
+		columnBitmasks.put("studentId", 256L);
+
+		columnBitmasks.put("submitDate", 512L);
+
+		columnBitmasks.put("submissionText", 1024L);
+
+		columnBitmasks.put("comment_", 2048L);
+
+		columnBitmasks.put("grade", 4096L);
+
+		columnBitmasks.put("assignmentId", 8192L);
+
+		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
+	}
+
 	private long _columnBitmask;
 	private Submission _escapedModel;
 

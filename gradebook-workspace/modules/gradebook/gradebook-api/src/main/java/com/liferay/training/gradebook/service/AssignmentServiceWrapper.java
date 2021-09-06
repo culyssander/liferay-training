@@ -30,6 +30,33 @@ public class AssignmentServiceWrapper
 		_assignmentService = assignmentService;
 	}
 
+	@Override
+	public com.liferay.training.gradebook.model.Assignment addAssignment(
+			long groupId, java.util.Map<java.util.Locale, String> title,
+			String description, java.util.Date dueDate,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _assignmentService.addAssignment(
+			groupId, title, description, dueDate, serviceContext);
+	}
+
+	@Override
+	public com.liferay.training.gradebook.model.Assignment deleteAssignment(
+			long assignmentId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _assignmentService.deleteAssignment(assignmentId);
+	}
+
+	@Override
+	public com.liferay.training.gradebook.model.Assignment getAssignment(
+			long assignmentId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _assignmentService.getAssignment(assignmentId);
+	}
+
 	/**
 	 * Returns the OSGi service identifier.
 	 *
@@ -38,6 +65,17 @@ public class AssignmentServiceWrapper
 	@Override
 	public String getOSGiServiceIdentifier() {
 		return _assignmentService.getOSGiServiceIdentifier();
+	}
+
+	@Override
+	public com.liferay.training.gradebook.model.Assignment updateAssignment(
+			long assignmentId, java.util.Map<java.util.Locale, String> titleMap,
+			String description, java.util.Date dueDate,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _assignmentService.updateAssignment(
+			assignmentId, titleMap, description, dueDate, serviceContext);
 	}
 
 	@Override

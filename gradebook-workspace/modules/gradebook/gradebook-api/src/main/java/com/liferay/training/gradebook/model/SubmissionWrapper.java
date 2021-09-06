@@ -14,17 +14,13 @@
 
 package com.liferay.training.gradebook.model;
 
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,20 +31,12 @@ import java.util.Objects;
  * @see Submission
  * @generated
  */
-public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
+public class SubmissionWrapper
+	extends BaseModelWrapper<Submission>
+	implements ModelWrapper<Submission>, Submission {
 
 	public SubmissionWrapper(Submission submission) {
-		_submission = submission;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Submission.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Submission.class.getName();
+		super(submission);
 	}
 
 	@Override
@@ -65,7 +53,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 		attributes.put("modifiedDate", getModifiedDate());
 		attributes.put("studentId", getStudentId());
 		attributes.put("submitDate", getSubmitDate());
-		attributes.put("submisionText", getSubmisionText());
+		attributes.put("submissionText", getSubmissionText());
 		attributes.put("comment", getComment());
 		attributes.put("grade", getGrade());
 		attributes.put("assignmentId", getAssignmentId());
@@ -135,10 +123,10 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 			setSubmitDate(submitDate);
 		}
 
-		String submisionText = (String)attributes.get("submisionText");
+		String submissionText = (String)attributes.get("submissionText");
 
-		if (submisionText != null) {
-			setSubmisionText(submisionText);
+		if (submissionText != null) {
+			setSubmissionText(submissionText);
 		}
 
 		String comment = (String)attributes.get("comment");
@@ -160,16 +148,6 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 		}
 	}
 
-	@Override
-	public Object clone() {
-		return new SubmissionWrapper((Submission)_submission.clone());
-	}
-
-	@Override
-	public int compareTo(Submission submission) {
-		return _submission.compareTo(submission);
-	}
-
 	/**
 	 * Returns the assignment ID of this submission.
 	 *
@@ -177,7 +155,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public long getAssignmentId() {
-		return _submission.getAssignmentId();
+		return model.getAssignmentId();
 	}
 
 	/**
@@ -187,7 +165,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public String getComment() {
-		return _submission.getComment();
+		return model.getComment();
 	}
 
 	/**
@@ -197,7 +175,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public long getCompanyId() {
-		return _submission.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -207,12 +185,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public Date getCreateDate() {
-		return _submission.getCreateDate();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _submission.getExpandoBridge();
+		return model.getCreateDate();
 	}
 
 	/**
@@ -222,7 +195,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public int getGrade() {
-		return _submission.getGrade();
+		return model.getGrade();
 	}
 
 	/**
@@ -232,7 +205,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public long getGroupId() {
-		return _submission.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -242,7 +215,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return _submission.getModifiedDate();
+		return model.getModifiedDate();
 	}
 
 	/**
@@ -252,12 +225,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _submission.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _submission.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -267,17 +235,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public long getStudentId() {
-		return _submission.getStudentId();
-	}
-
-	/**
-	 * Returns the submision text of this submission.
-	 *
-	 * @return the submision text of this submission
-	 */
-	@Override
-	public String getSubmisionText() {
-		return _submission.getSubmisionText();
+		return model.getStudentId();
 	}
 
 	/**
@@ -287,7 +245,17 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public long getSubmissionId() {
-		return _submission.getSubmissionId();
+		return model.getSubmissionId();
+	}
+
+	/**
+	 * Returns the submission text of this submission.
+	 *
+	 * @return the submission text of this submission
+	 */
+	@Override
+	public String getSubmissionText() {
+		return model.getSubmissionText();
 	}
 
 	/**
@@ -297,7 +265,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public Date getSubmitDate() {
-		return _submission.getSubmitDate();
+		return model.getSubmitDate();
 	}
 
 	/**
@@ -307,7 +275,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public long getUserId() {
-		return _submission.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -317,7 +285,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public String getUserName() {
-		return _submission.getUserName();
+		return model.getUserName();
 	}
 
 	/**
@@ -327,7 +295,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public String getUserUuid() {
-		return _submission.getUserUuid();
+		return model.getUserUuid();
 	}
 
 	/**
@@ -337,32 +305,12 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public String getUuid() {
-		return _submission.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _submission.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _submission.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _submission.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _submission.isNew();
+		return model.getUuid();
 	}
 
 	@Override
 	public void persist() {
-		_submission.persist();
+		model.persist();
 	}
 
 	/**
@@ -372,12 +320,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setAssignmentId(long assignmentId) {
-		_submission.setAssignmentId(assignmentId);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_submission.setCachedModel(cachedModel);
+		model.setAssignmentId(assignmentId);
 	}
 
 	/**
@@ -387,7 +330,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setComment(String comment) {
-		_submission.setComment(comment);
+		model.setComment(comment);
 	}
 
 	/**
@@ -397,7 +340,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setCompanyId(long companyId) {
-		_submission.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -407,24 +350,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setCreateDate(Date createDate) {
-		_submission.setCreateDate(createDate);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_submission.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_submission.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_submission.setExpandoBridgeAttributes(serviceContext);
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -434,7 +360,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setGrade(int grade) {
-		_submission.setGrade(grade);
+		model.setGrade(grade);
 	}
 
 	/**
@@ -444,7 +370,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setGroupId(long groupId) {
-		_submission.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -454,12 +380,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
-		_submission.setModifiedDate(modifiedDate);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_submission.setNew(n);
+		model.setModifiedDate(modifiedDate);
 	}
 
 	/**
@@ -469,12 +390,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_submission.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_submission.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -484,17 +400,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setStudentId(long studentId) {
-		_submission.setStudentId(studentId);
-	}
-
-	/**
-	 * Sets the submision text of this submission.
-	 *
-	 * @param submisionText the submision text of this submission
-	 */
-	@Override
-	public void setSubmisionText(String submisionText) {
-		_submission.setSubmisionText(submisionText);
+		model.setStudentId(studentId);
 	}
 
 	/**
@@ -504,7 +410,17 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setSubmissionId(long submissionId) {
-		_submission.setSubmissionId(submissionId);
+		model.setSubmissionId(submissionId);
+	}
+
+	/**
+	 * Sets the submission text of this submission.
+	 *
+	 * @param submissionText the submission text of this submission
+	 */
+	@Override
+	public void setSubmissionText(String submissionText) {
+		model.setSubmissionText(submissionText);
 	}
 
 	/**
@@ -514,7 +430,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setSubmitDate(Date submitDate) {
-		_submission.setSubmitDate(submitDate);
+		model.setSubmitDate(submitDate);
 	}
 
 	/**
@@ -524,7 +440,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setUserId(long userId) {
-		_submission.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -534,7 +450,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setUserName(String userName) {
-		_submission.setUserName(userName);
+		model.setUserName(userName);
 	}
 
 	/**
@@ -544,7 +460,7 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setUserUuid(String userUuid) {
-		_submission.setUserUuid(userUuid);
+		model.setUserUuid(userUuid);
 	}
 
 	/**
@@ -554,80 +470,17 @@ public class SubmissionWrapper implements ModelWrapper<Submission>, Submission {
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_submission.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel<Submission>
-		toCacheModel() {
-
-		return _submission.toCacheModel();
-	}
-
-	@Override
-	public Submission toEscapedModel() {
-		return new SubmissionWrapper(_submission.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _submission.toString();
-	}
-
-	@Override
-	public Submission toUnescapedModel() {
-		return new SubmissionWrapper(_submission.toUnescapedModel());
-	}
-
-	@Override
-	public String toXmlString() {
-		return _submission.toXmlString();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
-
-		if (!(object instanceof SubmissionWrapper)) {
-			return false;
-		}
-
-		SubmissionWrapper submissionWrapper = (SubmissionWrapper)object;
-
-		if (Objects.equals(_submission, submissionWrapper._submission)) {
-			return true;
-		}
-
-		return false;
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return _submission.getStagedModelType();
+		return model.getStagedModelType();
 	}
 
 	@Override
-	public Submission getWrappedModel() {
-		return _submission;
+	protected SubmissionWrapper wrap(Submission submission) {
+		return new SubmissionWrapper(submission);
 	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _submission.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _submission.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_submission.resetOriginalValues();
-	}
-
-	private final Submission _submission;
 
 }

@@ -14,6 +14,9 @@
 
 package com.liferay.training.gradebook.service.persistence.impl;
 
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
+import com.liferay.portal.kernel.dao.orm.ArgumentsResolver;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -21,39 +24,48 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 import com.liferay.training.gradebook.exception.NoSuchSubmissionException;
 import com.liferay.training.gradebook.model.Submission;
 import com.liferay.training.gradebook.model.impl.SubmissionImpl;
 import com.liferay.training.gradebook.model.impl.SubmissionModelImpl;
 import com.liferay.training.gradebook.service.persistence.SubmissionPersistence;
+import com.liferay.training.gradebook.service.persistence.impl.constants.GradebookPersistenceConstants;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.sql.DataSource;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the submission service.
@@ -65,6 +77,7 @@ import java.util.Set;
  * @author Brian Wing Shun Chan
  * @generated
  */
+@Component(service = SubmissionPersistence.class)
 public class SubmissionPersistenceImpl
 	extends BasePersistenceImpl<Submission> implements SubmissionPersistence {
 
@@ -250,10 +263,6 @@ public class SubmissionPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -602,8 +611,6 @@ public class SubmissionPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -761,11 +768,6 @@ public class SubmissionPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(
-						_finderPathFetchByUUID_G, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -854,8 +856,6 @@ public class SubmissionPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -1056,10 +1056,6 @@ public class SubmissionPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -1438,8 +1434,6 @@ public class SubmissionPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -1612,10 +1606,6 @@ public class SubmissionPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -1940,8 +1930,6 @@ public class SubmissionPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -1954,508 +1942,6 @@ public class SubmissionPersistenceImpl
 
 	private static final String _FINDER_COLUMN_GROUPID_GROUPID_2 =
 		"submission.groupId = ?";
-
-	private FinderPath _finderPathWithPaginationFindByStudentId;
-	private FinderPath _finderPathWithoutPaginationFindByStudentId;
-	private FinderPath _finderPathCountByStudentId;
-
-	/**
-	 * Returns all the submissions where studentId = &#63;.
-	 *
-	 * @param studentId the student ID
-	 * @return the matching submissions
-	 */
-	@Override
-	public List<Submission> findByStudentId(long studentId) {
-		return findByStudentId(
-			studentId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
-	}
-
-	/**
-	 * Returns a range of all the submissions where studentId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SubmissionModelImpl</code>.
-	 * </p>
-	 *
-	 * @param studentId the student ID
-	 * @param start the lower bound of the range of submissions
-	 * @param end the upper bound of the range of submissions (not inclusive)
-	 * @return the range of matching submissions
-	 */
-	@Override
-	public List<Submission> findByStudentId(
-		long studentId, int start, int end) {
-
-		return findByStudentId(studentId, start, end, null);
-	}
-
-	/**
-	 * Returns an ordered range of all the submissions where studentId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SubmissionModelImpl</code>.
-	 * </p>
-	 *
-	 * @param studentId the student ID
-	 * @param start the lower bound of the range of submissions
-	 * @param end the upper bound of the range of submissions (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @return the ordered range of matching submissions
-	 */
-	@Override
-	public List<Submission> findByStudentId(
-		long studentId, int start, int end,
-		OrderByComparator<Submission> orderByComparator) {
-
-		return findByStudentId(studentId, start, end, orderByComparator, true);
-	}
-
-	/**
-	 * Returns an ordered range of all the submissions where studentId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SubmissionModelImpl</code>.
-	 * </p>
-	 *
-	 * @param studentId the student ID
-	 * @param start the lower bound of the range of submissions
-	 * @param end the upper bound of the range of submissions (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param useFinderCache whether to use the finder cache
-	 * @return the ordered range of matching submissions
-	 */
-	@Override
-	public List<Submission> findByStudentId(
-		long studentId, int start, int end,
-		OrderByComparator<Submission> orderByComparator,
-		boolean useFinderCache) {
-
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
-
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-			(orderByComparator == null)) {
-
-			if (useFinderCache) {
-				finderPath = _finderPathWithoutPaginationFindByStudentId;
-				finderArgs = new Object[] {studentId};
-			}
-		}
-		else if (useFinderCache) {
-			finderPath = _finderPathWithPaginationFindByStudentId;
-			finderArgs = new Object[] {
-				studentId, start, end, orderByComparator
-			};
-		}
-
-		List<Submission> list = null;
-
-		if (useFinderCache) {
-			list = (List<Submission>)finderCache.getResult(
-				finderPath, finderArgs, this);
-
-			if ((list != null) && !list.isEmpty()) {
-				for (Submission submission : list) {
-					if (studentId != submission.getStudentId()) {
-						list = null;
-
-						break;
-					}
-				}
-			}
-		}
-
-		if (list == null) {
-			StringBundler sb = null;
-
-			if (orderByComparator != null) {
-				sb = new StringBundler(
-					3 + (orderByComparator.getOrderByFields().length * 2));
-			}
-			else {
-				sb = new StringBundler(3);
-			}
-
-			sb.append(_SQL_SELECT_SUBMISSION_WHERE);
-
-			sb.append(_FINDER_COLUMN_STUDENTID_STUDENTID_2);
-
-			if (orderByComparator != null) {
-				appendOrderByComparator(
-					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
-			}
-			else {
-				sb.append(SubmissionModelImpl.ORDER_BY_JPQL);
-			}
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(studentId);
-
-				list = (List<Submission>)QueryUtil.list(
-					query, getDialect(), start, end);
-
-				cacheResult(list);
-
-				if (useFinderCache) {
-					finderCache.putResult(finderPath, finderArgs, list);
-				}
-			}
-			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return list;
-	}
-
-	/**
-	 * Returns the first submission in the ordered set where studentId = &#63;.
-	 *
-	 * @param studentId the student ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the first matching submission
-	 * @throws NoSuchSubmissionException if a matching submission could not be found
-	 */
-	@Override
-	public Submission findByStudentId_First(
-			long studentId, OrderByComparator<Submission> orderByComparator)
-		throws NoSuchSubmissionException {
-
-		Submission submission = fetchByStudentId_First(
-			studentId, orderByComparator);
-
-		if (submission != null) {
-			return submission;
-		}
-
-		StringBundler sb = new StringBundler(4);
-
-		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-		sb.append("studentId=");
-		sb.append(studentId);
-
-		sb.append("}");
-
-		throw new NoSuchSubmissionException(sb.toString());
-	}
-
-	/**
-	 * Returns the first submission in the ordered set where studentId = &#63;.
-	 *
-	 * @param studentId the student ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the first matching submission, or <code>null</code> if a matching submission could not be found
-	 */
-	@Override
-	public Submission fetchByStudentId_First(
-		long studentId, OrderByComparator<Submission> orderByComparator) {
-
-		List<Submission> list = findByStudentId(
-			studentId, 0, 1, orderByComparator);
-
-		if (!list.isEmpty()) {
-			return list.get(0);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Returns the last submission in the ordered set where studentId = &#63;.
-	 *
-	 * @param studentId the student ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the last matching submission
-	 * @throws NoSuchSubmissionException if a matching submission could not be found
-	 */
-	@Override
-	public Submission findByStudentId_Last(
-			long studentId, OrderByComparator<Submission> orderByComparator)
-		throws NoSuchSubmissionException {
-
-		Submission submission = fetchByStudentId_Last(
-			studentId, orderByComparator);
-
-		if (submission != null) {
-			return submission;
-		}
-
-		StringBundler sb = new StringBundler(4);
-
-		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-		sb.append("studentId=");
-		sb.append(studentId);
-
-		sb.append("}");
-
-		throw new NoSuchSubmissionException(sb.toString());
-	}
-
-	/**
-	 * Returns the last submission in the ordered set where studentId = &#63;.
-	 *
-	 * @param studentId the student ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the last matching submission, or <code>null</code> if a matching submission could not be found
-	 */
-	@Override
-	public Submission fetchByStudentId_Last(
-		long studentId, OrderByComparator<Submission> orderByComparator) {
-
-		int count = countByStudentId(studentId);
-
-		if (count == 0) {
-			return null;
-		}
-
-		List<Submission> list = findByStudentId(
-			studentId, count - 1, count, orderByComparator);
-
-		if (!list.isEmpty()) {
-			return list.get(0);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Returns the submissions before and after the current submission in the ordered set where studentId = &#63;.
-	 *
-	 * @param submissionId the primary key of the current submission
-	 * @param studentId the student ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the previous, current, and next submission
-	 * @throws NoSuchSubmissionException if a submission with the primary key could not be found
-	 */
-	@Override
-	public Submission[] findByStudentId_PrevAndNext(
-			long submissionId, long studentId,
-			OrderByComparator<Submission> orderByComparator)
-		throws NoSuchSubmissionException {
-
-		Submission submission = findByPrimaryKey(submissionId);
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Submission[] array = new SubmissionImpl[3];
-
-			array[0] = getByStudentId_PrevAndNext(
-				session, submission, studentId, orderByComparator, true);
-
-			array[1] = submission;
-
-			array[2] = getByStudentId_PrevAndNext(
-				session, submission, studentId, orderByComparator, false);
-
-			return array;
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-	}
-
-	protected Submission getByStudentId_PrevAndNext(
-		Session session, Submission submission, long studentId,
-		OrderByComparator<Submission> orderByComparator, boolean previous) {
-
-		StringBundler sb = null;
-
-		if (orderByComparator != null) {
-			sb = new StringBundler(
-				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
-					(orderByComparator.getOrderByFields().length * 3));
-		}
-		else {
-			sb = new StringBundler(3);
-		}
-
-		sb.append(_SQL_SELECT_SUBMISSION_WHERE);
-
-		sb.append(_FINDER_COLUMN_STUDENTID_STUDENTID_2);
-
-		if (orderByComparator != null) {
-			String[] orderByConditionFields =
-				orderByComparator.getOrderByConditionFields();
-
-			if (orderByConditionFields.length > 0) {
-				sb.append(WHERE_AND);
-			}
-
-			for (int i = 0; i < orderByConditionFields.length; i++) {
-				sb.append(_ORDER_BY_ENTITY_ALIAS);
-				sb.append(orderByConditionFields[i]);
-
-				if ((i + 1) < orderByConditionFields.length) {
-					if (orderByComparator.isAscending() ^ previous) {
-						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
-					}
-					else {
-						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
-					}
-				}
-				else {
-					if (orderByComparator.isAscending() ^ previous) {
-						sb.append(WHERE_GREATER_THAN);
-					}
-					else {
-						sb.append(WHERE_LESSER_THAN);
-					}
-				}
-			}
-
-			sb.append(ORDER_BY_CLAUSE);
-
-			String[] orderByFields = orderByComparator.getOrderByFields();
-
-			for (int i = 0; i < orderByFields.length; i++) {
-				sb.append(_ORDER_BY_ENTITY_ALIAS);
-				sb.append(orderByFields[i]);
-
-				if ((i + 1) < orderByFields.length) {
-					if (orderByComparator.isAscending() ^ previous) {
-						sb.append(ORDER_BY_ASC_HAS_NEXT);
-					}
-					else {
-						sb.append(ORDER_BY_DESC_HAS_NEXT);
-					}
-				}
-				else {
-					if (orderByComparator.isAscending() ^ previous) {
-						sb.append(ORDER_BY_ASC);
-					}
-					else {
-						sb.append(ORDER_BY_DESC);
-					}
-				}
-			}
-		}
-		else {
-			sb.append(SubmissionModelImpl.ORDER_BY_JPQL);
-		}
-
-		String sql = sb.toString();
-
-		Query query = session.createQuery(sql);
-
-		query.setFirstResult(0);
-		query.setMaxResults(2);
-
-		QueryPos queryPos = QueryPos.getInstance(query);
-
-		queryPos.add(studentId);
-
-		if (orderByComparator != null) {
-			for (Object orderByConditionValue :
-					orderByComparator.getOrderByConditionValues(submission)) {
-
-				queryPos.add(orderByConditionValue);
-			}
-		}
-
-		List<Submission> list = query.list();
-
-		if (list.size() == 2) {
-			return list.get(1);
-		}
-		else {
-			return null;
-		}
-	}
-
-	/**
-	 * Removes all the submissions where studentId = &#63; from the database.
-	 *
-	 * @param studentId the student ID
-	 */
-	@Override
-	public void removeByStudentId(long studentId) {
-		for (Submission submission :
-				findByStudentId(
-					studentId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
-
-			remove(submission);
-		}
-	}
-
-	/**
-	 * Returns the number of submissions where studentId = &#63;.
-	 *
-	 * @param studentId the student ID
-	 * @return the number of matching submissions
-	 */
-	@Override
-	public int countByStudentId(long studentId) {
-		FinderPath finderPath = _finderPathCountByStudentId;
-
-		Object[] finderArgs = new Object[] {studentId};
-
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-
-		if (count == null) {
-			StringBundler sb = new StringBundler(2);
-
-			sb.append(_SQL_COUNT_SUBMISSION_WHERE);
-
-			sb.append(_FINDER_COLUMN_STUDENTID_STUDENTID_2);
-
-			String sql = sb.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query query = session.createQuery(sql);
-
-				QueryPos queryPos = QueryPos.getInstance(query);
-
-				queryPos.add(studentId);
-
-				count = (Long)query.uniqueResult();
-
-				finderCache.putResult(finderPath, finderArgs, count);
-			}
-			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return count.intValue();
-	}
-
-	private static final String _FINDER_COLUMN_STUDENTID_STUDENTID_2 =
-		"submission.studentId = ?";
 
 	private FinderPath _finderPathWithPaginationFindByG_A;
 	private FinderPath _finderPathWithoutPaginationFindByG_A;
@@ -2625,10 +2111,6 @@ public class SubmissionPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -2983,8 +2465,6 @@ public class SubmissionPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -3174,10 +2654,6 @@ public class SubmissionPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -3535,8 +3011,6 @@ public class SubmissionPersistenceImpl
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
 				throw processException(exception);
 			}
 			finally {
@@ -3561,21 +3035,12 @@ public class SubmissionPersistenceImpl
 		dbColumnNames.put("uuid", "uuid_");
 		dbColumnNames.put("comment", "comment_");
 
-		try {
-			Field field = BasePersistenceImpl.class.getDeclaredField(
-				"_dbColumnNames");
-
-			field.setAccessible(true);
-
-			field.set(this, dbColumnNames);
-		}
-		catch (Exception exception) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(exception, exception);
-			}
-		}
+		setDBColumnNames(dbColumnNames);
 
 		setModelClass(Submission.class);
+
+		setModelImplClass(SubmissionImpl.class);
+		setModelPKClass(long.class);
 	}
 
 	/**
@@ -3586,15 +3051,12 @@ public class SubmissionPersistenceImpl
 	@Override
 	public void cacheResult(Submission submission) {
 		entityCache.putResult(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED, SubmissionImpl.class,
-			submission.getPrimaryKey(), submission);
+			SubmissionImpl.class, submission.getPrimaryKey(), submission);
 
 		finderCache.putResult(
 			_finderPathFetchByUUID_G,
 			new Object[] {submission.getUuid(), submission.getGroupId()},
 			submission);
-
-		submission.resetOriginalValues();
 	}
 
 	/**
@@ -3606,13 +3068,9 @@ public class SubmissionPersistenceImpl
 	public void cacheResult(List<Submission> submissions) {
 		for (Submission submission : submissions) {
 			if (entityCache.getResult(
-					SubmissionModelImpl.ENTITY_CACHE_ENABLED,
 					SubmissionImpl.class, submission.getPrimaryKey()) == null) {
 
 				cacheResult(submission);
-			}
-			else {
-				submission.resetOriginalValues();
 			}
 		}
 	}
@@ -3642,39 +3100,24 @@ public class SubmissionPersistenceImpl
 	 */
 	@Override
 	public void clearCache(Submission submission) {
-		entityCache.removeResult(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED, SubmissionImpl.class,
-			submission.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
-		clearUniqueFindersCache((SubmissionModelImpl)submission, true);
+		entityCache.removeResult(SubmissionImpl.class, submission);
 	}
 
 	@Override
 	public void clearCache(List<Submission> submissions) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (Submission submission : submissions) {
-			entityCache.removeResult(
-				SubmissionModelImpl.ENTITY_CACHE_ENABLED, SubmissionImpl.class,
-				submission.getPrimaryKey());
-
-			clearUniqueFindersCache((SubmissionModelImpl)submission, true);
+			entityCache.removeResult(SubmissionImpl.class, submission);
 		}
 	}
 
+	@Override
 	public void clearCache(Set<Serializable> primaryKeys) {
 		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
 		for (Serializable primaryKey : primaryKeys) {
-			entityCache.removeResult(
-				SubmissionModelImpl.ENTITY_CACHE_ENABLED, SubmissionImpl.class,
-				primaryKey);
+			entityCache.removeResult(SubmissionImpl.class, primaryKey);
 		}
 	}
 
@@ -3689,31 +3132,6 @@ public class SubmissionPersistenceImpl
 			_finderPathCountByUUID_G, args, Long.valueOf(1), false);
 		finderCache.putResult(
 			_finderPathFetchByUUID_G, args, submissionModelImpl, false);
-	}
-
-	protected void clearUniqueFindersCache(
-		SubmissionModelImpl submissionModelImpl, boolean clearCurrent) {
-
-		if (clearCurrent) {
-			Object[] args = new Object[] {
-				submissionModelImpl.getUuid(), submissionModelImpl.getGroupId()
-			};
-
-			finderCache.removeResult(_finderPathCountByUUID_G, args);
-			finderCache.removeResult(_finderPathFetchByUUID_G, args);
-		}
-
-		if ((submissionModelImpl.getColumnBitmask() &
-			 _finderPathFetchByUUID_G.getColumnBitmask()) != 0) {
-
-			Object[] args = new Object[] {
-				submissionModelImpl.getOriginalUuid(),
-				submissionModelImpl.getOriginalGroupId()
-			};
-
-			finderCache.removeResult(_finderPathCountByUUID_G, args);
-			finderCache.removeResult(_finderPathFetchByUUID_G, args);
-		}
 	}
 
 	/**
@@ -3882,8 +3300,6 @@ public class SubmissionPersistenceImpl
 
 			if (isNew) {
 				session.save(submission);
-
-				submission.setNew(false);
 			}
 			else {
 				submission = (Submission)session.merge(submission);
@@ -3896,200 +3312,14 @@ public class SubmissionPersistenceImpl
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-
-		if (!SubmissionModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-		}
-		else if (isNew) {
-			Object[] args = new Object[] {submissionModelImpl.getUuid()};
-
-			finderCache.removeResult(_finderPathCountByUuid, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByUuid, args);
-
-			args = new Object[] {
-				submissionModelImpl.getUuid(),
-				submissionModelImpl.getCompanyId()
-			};
-
-			finderCache.removeResult(_finderPathCountByUuid_C, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByUuid_C, args);
-
-			args = new Object[] {submissionModelImpl.getGroupId()};
-
-			finderCache.removeResult(_finderPathCountByGroupId, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByGroupId, args);
-
-			args = new Object[] {submissionModelImpl.getStudentId()};
-
-			finderCache.removeResult(_finderPathCountByStudentId, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByStudentId, args);
-
-			args = new Object[] {
-				submissionModelImpl.getGroupId(),
-				submissionModelImpl.getAssignmentId()
-			};
-
-			finderCache.removeResult(_finderPathCountByG_A, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByG_A, args);
-
-			args = new Object[] {
-				submissionModelImpl.getStudentId(),
-				submissionModelImpl.getAssignmentId()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByStudentIdAssignmentId, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByStudentIdAssignmentId, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((submissionModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByUuid.getColumnBitmask()) !=
-					 0) {
-
-				Object[] args = new Object[] {
-					submissionModelImpl.getOriginalUuid()
-				};
-
-				finderCache.removeResult(_finderPathCountByUuid, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByUuid, args);
-
-				args = new Object[] {submissionModelImpl.getUuid()};
-
-				finderCache.removeResult(_finderPathCountByUuid, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByUuid, args);
-			}
-
-			if ((submissionModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByUuid_C.getColumnBitmask()) !=
-					 0) {
-
-				Object[] args = new Object[] {
-					submissionModelImpl.getOriginalUuid(),
-					submissionModelImpl.getOriginalCompanyId()
-				};
-
-				finderCache.removeResult(_finderPathCountByUuid_C, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByUuid_C, args);
-
-				args = new Object[] {
-					submissionModelImpl.getUuid(),
-					submissionModelImpl.getCompanyId()
-				};
-
-				finderCache.removeResult(_finderPathCountByUuid_C, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByUuid_C, args);
-			}
-
-			if ((submissionModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByGroupId.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					submissionModelImpl.getOriginalGroupId()
-				};
-
-				finderCache.removeResult(_finderPathCountByGroupId, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByGroupId, args);
-
-				args = new Object[] {submissionModelImpl.getGroupId()};
-
-				finderCache.removeResult(_finderPathCountByGroupId, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByGroupId, args);
-			}
-
-			if ((submissionModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByStudentId.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					submissionModelImpl.getOriginalStudentId()
-				};
-
-				finderCache.removeResult(_finderPathCountByStudentId, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByStudentId, args);
-
-				args = new Object[] {submissionModelImpl.getStudentId()};
-
-				finderCache.removeResult(_finderPathCountByStudentId, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByStudentId, args);
-			}
-
-			if ((submissionModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByG_A.getColumnBitmask()) !=
-					 0) {
-
-				Object[] args = new Object[] {
-					submissionModelImpl.getOriginalGroupId(),
-					submissionModelImpl.getOriginalAssignmentId()
-				};
-
-				finderCache.removeResult(_finderPathCountByG_A, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByG_A, args);
-
-				args = new Object[] {
-					submissionModelImpl.getGroupId(),
-					submissionModelImpl.getAssignmentId()
-				};
-
-				finderCache.removeResult(_finderPathCountByG_A, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByG_A, args);
-			}
-
-			if ((submissionModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByStudentIdAssignmentId.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					submissionModelImpl.getOriginalStudentId(),
-					submissionModelImpl.getOriginalAssignmentId()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByStudentIdAssignmentId, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByStudentIdAssignmentId,
-					args);
-
-				args = new Object[] {
-					submissionModelImpl.getStudentId(),
-					submissionModelImpl.getAssignmentId()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByStudentIdAssignmentId, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByStudentIdAssignmentId,
-					args);
-			}
-		}
-
 		entityCache.putResult(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED, SubmissionImpl.class,
-			submission.getPrimaryKey(), submission, false);
+			SubmissionImpl.class, submissionModelImpl, false, true);
 
-		clearUniqueFindersCache(submissionModelImpl, false);
 		cacheUniqueFindersCache(submissionModelImpl);
+
+		if (isNew) {
+			submission.setNew(false);
+		}
 
 		submission.resetOriginalValues();
 
@@ -4138,161 +3368,12 @@ public class SubmissionPersistenceImpl
 	/**
 	 * Returns the submission with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the submission
-	 * @return the submission, or <code>null</code> if a submission with the primary key could not be found
-	 */
-	@Override
-	public Submission fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED, SubmissionImpl.class,
-			primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		Submission submission = (Submission)serializable;
-
-		if (submission == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				submission = (Submission)session.get(
-					SubmissionImpl.class, primaryKey);
-
-				if (submission != null) {
-					cacheResult(submission);
-				}
-				else {
-					entityCache.putResult(
-						SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-						SubmissionImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception exception) {
-				entityCache.removeResult(
-					SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-					SubmissionImpl.class, primaryKey);
-
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return submission;
-	}
-
-	/**
-	 * Returns the submission with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param submissionId the primary key of the submission
 	 * @return the submission, or <code>null</code> if a submission with the primary key could not be found
 	 */
 	@Override
 	public Submission fetchByPrimaryKey(long submissionId) {
 		return fetchByPrimaryKey((Serializable)submissionId);
-	}
-
-	@Override
-	public Map<Serializable, Submission> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Submission> map =
-			new HashMap<Serializable, Submission>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Submission submission = fetchByPrimaryKey(primaryKey);
-
-			if (submission != null) {
-				map.put(primaryKey, submission);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				SubmissionModelImpl.ENTITY_CACHE_ENABLED, SubmissionImpl.class,
-				primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (Submission)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler sb = new StringBundler(
-			(uncachedPrimaryKeys.size() * 2) + 1);
-
-		sb.append(_SQL_SELECT_SUBMISSION_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			sb.append((long)primaryKey);
-
-			sb.append(",");
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		sb.append(")");
-
-		String sql = sb.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query query = session.createQuery(sql);
-
-			for (Submission submission : (List<Submission>)query.list()) {
-				map.put(submission.getPrimaryKeyObj(), submission);
-
-				cacheResult(submission);
-
-				uncachedPrimaryKeys.remove(submission.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-					SubmissionImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception exception) {
-			throw processException(exception);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -4419,10 +3500,6 @@ public class SubmissionPersistenceImpl
 				}
 			}
 			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(finderPath, finderArgs);
-				}
-
 				throw processException(exception);
 			}
 			finally {
@@ -4468,9 +3545,6 @@ public class SubmissionPersistenceImpl
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
 			catch (Exception exception) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
 				throw processException(exception);
 			}
 			finally {
@@ -4487,6 +3561,21 @@ public class SubmissionPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "submissionId";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_SUBMISSION;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return SubmissionModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -4494,200 +3583,185 @@ public class SubmissionPersistenceImpl
 	/**
 	 * Initializes the submission persistence.
 	 */
-	public void afterPropertiesSet() {
-		_finderPathWithPaginationFindAll = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+	@Activate
+	public void activate(BundleContext bundleContext) {
+		_bundleContext = bundleContext;
 
-		_finderPathWithoutPaginationFindAll = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+		_argumentsResolverServiceRegistration = _bundleContext.registerService(
+			ArgumentsResolver.class, new SubmissionModelArgumentsResolver(),
+			MapUtil.singletonDictionary(
+				"model.class.name", Submission.class.getName()));
 
-		_finderPathCountAll = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, Long.class,
+		_finderPathWithPaginationFindAll = _createFinderPath(
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
+
+		_finderPathWithoutPaginationFindAll = _createFinderPath(
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
+
+		_finderPathCountAll = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
-		_finderPathWithPaginationFindByUuid = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
+		_finderPathWithPaginationFindByUuid = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByUuid",
 			new String[] {
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"uuid_"}, true);
 
-		_finderPathWithoutPaginationFindByUuid = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
+		_finderPathWithoutPaginationFindByUuid = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByUuid",
-			new String[] {String.class.getName()},
-			SubmissionModelImpl.UUID_COLUMN_BITMASK);
+			new String[] {String.class.getName()}, new String[] {"uuid_"},
+			true);
 
-		_finderPathCountByUuid = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, Long.class,
+		_finderPathCountByUuid = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUuid",
-			new String[] {String.class.getName()});
+			new String[] {String.class.getName()}, new String[] {"uuid_"},
+			false);
 
-		_finderPathFetchByUUID_G = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
+		_finderPathFetchByUUID_G = _createFinderPath(
 			FINDER_CLASS_NAME_ENTITY, "fetchByUUID_G",
 			new String[] {String.class.getName(), Long.class.getName()},
-			SubmissionModelImpl.UUID_COLUMN_BITMASK |
-			SubmissionModelImpl.GROUPID_COLUMN_BITMASK);
+			new String[] {"uuid_", "groupId"}, true);
 
-		_finderPathCountByUUID_G = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, Long.class,
+		_finderPathCountByUUID_G = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUUID_G",
-			new String[] {String.class.getName(), Long.class.getName()});
+			new String[] {String.class.getName(), Long.class.getName()},
+			new String[] {"uuid_", "groupId"}, false);
 
-		_finderPathWithPaginationFindByUuid_C = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
+		_finderPathWithPaginationFindByUuid_C = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByUuid_C",
 			new String[] {
 				String.class.getName(), Long.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"uuid_", "companyId"}, true);
 
-		_finderPathWithoutPaginationFindByUuid_C = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
+		_finderPathWithoutPaginationFindByUuid_C = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByUuid_C",
 			new String[] {String.class.getName(), Long.class.getName()},
-			SubmissionModelImpl.UUID_COLUMN_BITMASK |
-			SubmissionModelImpl.COMPANYID_COLUMN_BITMASK);
+			new String[] {"uuid_", "companyId"}, true);
 
-		_finderPathCountByUuid_C = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, Long.class,
+		_finderPathCountByUuid_C = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUuid_C",
-			new String[] {String.class.getName(), Long.class.getName()});
+			new String[] {String.class.getName(), Long.class.getName()},
+			new String[] {"uuid_", "companyId"}, false);
 
-		_finderPathWithPaginationFindByGroupId = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
+		_finderPathWithPaginationFindByGroupId = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByGroupId",
 			new String[] {
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"groupId"}, true);
 
-		_finderPathWithoutPaginationFindByGroupId = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
+		_finderPathWithoutPaginationFindByGroupId = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByGroupId",
-			new String[] {Long.class.getName()},
-			SubmissionModelImpl.GROUPID_COLUMN_BITMASK);
+			new String[] {Long.class.getName()}, new String[] {"groupId"},
+			true);
 
-		_finderPathCountByGroupId = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, Long.class,
+		_finderPathCountByGroupId = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByGroupId",
-			new String[] {Long.class.getName()});
+			new String[] {Long.class.getName()}, new String[] {"groupId"},
+			false);
 
-		_finderPathWithPaginationFindByStudentId = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByStudentId",
-			new String[] {
-				Long.class.getName(), Integer.class.getName(),
-				Integer.class.getName(), OrderByComparator.class.getName()
-			});
-
-		_finderPathWithoutPaginationFindByStudentId = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByStudentId",
-			new String[] {Long.class.getName()},
-			SubmissionModelImpl.STUDENTID_COLUMN_BITMASK);
-
-		_finderPathCountByStudentId = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByStudentId",
-			new String[] {Long.class.getName()});
-
-		_finderPathWithPaginationFindByG_A = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
+		_finderPathWithPaginationFindByG_A = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByG_A",
 			new String[] {
 				Long.class.getName(), Long.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"groupId", "assignmentId"}, true);
 
-		_finderPathWithoutPaginationFindByG_A = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
+		_finderPathWithoutPaginationFindByG_A = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByG_A",
 			new String[] {Long.class.getName(), Long.class.getName()},
-			SubmissionModelImpl.GROUPID_COLUMN_BITMASK |
-			SubmissionModelImpl.ASSIGNMENTID_COLUMN_BITMASK);
+			new String[] {"groupId", "assignmentId"}, true);
 
-		_finderPathCountByG_A = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, Long.class,
+		_finderPathCountByG_A = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByG_A",
-			new String[] {Long.class.getName(), Long.class.getName()});
+			new String[] {Long.class.getName(), Long.class.getName()},
+			new String[] {"groupId", "assignmentId"}, false);
 
-		_finderPathWithPaginationFindByStudentIdAssignmentId = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findByStudentIdAssignmentId",
-			new String[] {
-				Long.class.getName(), Long.class.getName(),
-				Integer.class.getName(), Integer.class.getName(),
-				OrderByComparator.class.getName()
-			});
+		_finderPathWithPaginationFindByStudentIdAssignmentId =
+			_createFinderPath(
+				FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+				"findByStudentIdAssignmentId",
+				new String[] {
+					Long.class.getName(), Long.class.getName(),
+					Integer.class.getName(), Integer.class.getName(),
+					OrderByComparator.class.getName()
+				},
+				new String[] {"studentId", "assignmentId"}, true);
 
 		_finderPathWithoutPaginationFindByStudentIdAssignmentId =
-			new FinderPath(
-				SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-				SubmissionModelImpl.FINDER_CACHE_ENABLED, SubmissionImpl.class,
+			_createFinderPath(
 				FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 				"findByStudentIdAssignmentId",
 				new String[] {Long.class.getName(), Long.class.getName()},
-				SubmissionModelImpl.STUDENTID_COLUMN_BITMASK |
-				SubmissionModelImpl.ASSIGNMENTID_COLUMN_BITMASK);
+				new String[] {"studentId", "assignmentId"}, true);
 
-		_finderPathCountByStudentIdAssignmentId = new FinderPath(
-			SubmissionModelImpl.ENTITY_CACHE_ENABLED,
-			SubmissionModelImpl.FINDER_CACHE_ENABLED, Long.class,
+		_finderPathCountByStudentIdAssignmentId = _createFinderPath(
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByStudentIdAssignmentId",
-			new String[] {Long.class.getName(), Long.class.getName()});
+			new String[] {Long.class.getName(), Long.class.getName()},
+			new String[] {"studentId", "assignmentId"}, false);
 	}
 
-	public void destroy() {
+	@Deactivate
+	public void deactivate() {
 		entityCache.removeCache(SubmissionImpl.class.getName());
 
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		_argumentsResolverServiceRegistration.unregister();
+
+		for (ServiceRegistration<FinderPath> serviceRegistration :
+				_serviceRegistrations) {
+
+			serviceRegistration.unregister();
+		}
 	}
 
-	@ServiceReference(type = EntityCache.class)
+	@Override
+	@Reference(
+		target = GradebookPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
+
+	@Override
+	@Reference(
+		target = GradebookPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = GradebookPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	private BundleContext _bundleContext;
+
+	@Reference
 	protected EntityCache entityCache;
 
-	@ServiceReference(type = FinderCache.class)
+	@Reference
 	protected FinderCache finderCache;
 
 	private static final String _SQL_SELECT_SUBMISSION =
 		"SELECT submission FROM Submission submission";
-
-	private static final String _SQL_SELECT_SUBMISSION_WHERE_PKS_IN =
-		"SELECT submission FROM Submission submission WHERE submissionId IN (";
 
 	private static final String _SQL_SELECT_SUBMISSION_WHERE =
 		"SELECT submission FROM Submission submission WHERE ";
@@ -4711,5 +3785,103 @@ public class SubmissionPersistenceImpl
 
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(
 		new String[] {"uuid", "comment"});
+
+	private FinderPath _createFinderPath(
+		String cacheName, String methodName, String[] params,
+		String[] columnNames, boolean baseModelResult) {
+
+		FinderPath finderPath = new FinderPath(
+			cacheName, methodName, params, columnNames, baseModelResult);
+
+		if (!cacheName.equals(FINDER_CLASS_NAME_LIST_WITH_PAGINATION)) {
+			_serviceRegistrations.add(
+				_bundleContext.registerService(
+					FinderPath.class, finderPath,
+					MapUtil.singletonDictionary("cache.name", cacheName)));
+		}
+
+		return finderPath;
+	}
+
+	private Set<ServiceRegistration<FinderPath>> _serviceRegistrations =
+		new HashSet<>();
+	private ServiceRegistration<ArgumentsResolver>
+		_argumentsResolverServiceRegistration;
+
+	private static class SubmissionModelArgumentsResolver
+		implements ArgumentsResolver {
+
+		@Override
+		public Object[] getArguments(
+			FinderPath finderPath, BaseModel<?> baseModel, boolean checkColumn,
+			boolean original) {
+
+			String[] columnNames = finderPath.getColumnNames();
+
+			if ((columnNames == null) || (columnNames.length == 0)) {
+				if (baseModel.isNew()) {
+					return FINDER_ARGS_EMPTY;
+				}
+
+				return null;
+			}
+
+			SubmissionModelImpl submissionModelImpl =
+				(SubmissionModelImpl)baseModel;
+
+			long columnBitmask = submissionModelImpl.getColumnBitmask();
+
+			if (!checkColumn || (columnBitmask == 0)) {
+				return _getValue(submissionModelImpl, columnNames, original);
+			}
+
+			Long finderPathColumnBitmask = _finderPathColumnBitmasksCache.get(
+				finderPath);
+
+			if (finderPathColumnBitmask == null) {
+				finderPathColumnBitmask = 0L;
+
+				for (String columnName : columnNames) {
+					finderPathColumnBitmask |=
+						submissionModelImpl.getColumnBitmask(columnName);
+				}
+
+				_finderPathColumnBitmasksCache.put(
+					finderPath, finderPathColumnBitmask);
+			}
+
+			if ((columnBitmask & finderPathColumnBitmask) != 0) {
+				return _getValue(submissionModelImpl, columnNames, original);
+			}
+
+			return null;
+		}
+
+		private Object[] _getValue(
+			SubmissionModelImpl submissionModelImpl, String[] columnNames,
+			boolean original) {
+
+			Object[] arguments = new Object[columnNames.length];
+
+			for (int i = 0; i < arguments.length; i++) {
+				String columnName = columnNames[i];
+
+				if (original) {
+					arguments[i] = submissionModelImpl.getColumnOriginalValue(
+						columnName);
+				}
+				else {
+					arguments[i] = submissionModelImpl.getColumnValue(
+						columnName);
+				}
+			}
+
+			return arguments;
+		}
+
+		private static Map<FinderPath, Long> _finderPathColumnBitmasksCache =
+			new ConcurrentHashMap<>();
+
+	}
 
 }

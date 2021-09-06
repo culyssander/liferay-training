@@ -24,6 +24,8 @@ package com.liferay.training.gradebook.model.impl;
  * @author Brian Wing Shun Chan
  */
 public class AssignmentImpl extends AssignmentBaseImpl {
+	
+	private static final long serialVersionUID = 1L;
 
 	/*
 	 * NOTE FOR DEVELOPERS:

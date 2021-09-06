@@ -20,6 +20,8 @@ import com.liferay.portal.kernel.exception.PortalException;
  */
 public class SubmissionValidatorException extends PortalException {
 
+	private static final long serialVersionUID = 1L;
+	
 	public SubmissionValidatorException() {
 	}
 

@@ -29,7 +29,7 @@
 		<field name="modifiedDate" type="Date" />
 		<field name="studentId" type="long" />
 		<field name="submitDate" type="Date" />
-		<field name="submisionText" type="String" />
+		<field name="submissionText" type="String" />
 		<field name="comment" type="String" />
 		<field name="grade" type="int" />
 		<field name="assignmentId" type="long" />

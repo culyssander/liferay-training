@@ -27,7 +27,7 @@ create table Gradebook_Submission (
 	modifiedDate DATE null,
 	studentId LONG,
 	submitDate DATE null,
-	submisionText VARCHAR(75) null,
+	submissionText VARCHAR(75) null,
 	comment_ VARCHAR(75) null,
 	grade INTEGER,
 	assignmentId LONG

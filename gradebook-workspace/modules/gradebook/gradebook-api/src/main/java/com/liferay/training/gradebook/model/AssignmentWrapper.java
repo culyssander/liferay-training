@@ -14,17 +14,13 @@
 
 package com.liferay.training.gradebook.model;
 
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,20 +31,12 @@ import java.util.Objects;
  * @see Assignment
  * @generated
  */
-public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
+public class AssignmentWrapper
+	extends BaseModelWrapper<Assignment>
+	implements Assignment, ModelWrapper<Assignment> {
 
 	public AssignmentWrapper(Assignment assignment) {
-		_assignment = assignment;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Assignment.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Assignment.class.getName();
+		super(assignment);
 	}
 
 	@Override
@@ -167,16 +155,6 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 		}
 	}
 
-	@Override
-	public Object clone() {
-		return new AssignmentWrapper((Assignment)_assignment.clone());
-	}
-
-	@Override
-	public int compareTo(Assignment assignment) {
-		return _assignment.compareTo(assignment);
-	}
-
 	/**
 	 * Returns the assignment ID of this assignment.
 	 *
@@ -184,12 +162,12 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public long getAssignmentId() {
-		return _assignment.getAssignmentId();
+		return model.getAssignmentId();
 	}
 
 	@Override
 	public String[] getAvailableLanguageIds() {
-		return _assignment.getAvailableLanguageIds();
+		return model.getAvailableLanguageIds();
 	}
 
 	/**
@@ -199,7 +177,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public long getCompanyId() {
-		return _assignment.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -209,12 +187,12 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public Date getCreateDate() {
-		return _assignment.getCreateDate();
+		return model.getCreateDate();
 	}
 
 	@Override
 	public String getDefaultLanguageId() {
-		return _assignment.getDefaultLanguageId();
+		return model.getDefaultLanguageId();
 	}
 
 	/**
@@ -224,7 +202,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public String getDescription() {
-		return _assignment.getDescription();
+		return model.getDescription();
 	}
 
 	/**
@@ -234,12 +212,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public Date getDueDate() {
-		return _assignment.getDueDate();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _assignment.getExpandoBridge();
+		return model.getDueDate();
 	}
 
 	/**
@@ -249,7 +222,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public long getGroupId() {
-		return _assignment.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -259,7 +232,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return _assignment.getModifiedDate();
+		return model.getModifiedDate();
 	}
 
 	/**
@@ -269,12 +242,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _assignment.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _assignment.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -284,7 +252,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public int getStatus() {
-		return _assignment.getStatus();
+		return model.getStatus();
 	}
 
 	/**
@@ -294,7 +262,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public long getStatusByUserId() {
-		return _assignment.getStatusByUserId();
+		return model.getStatusByUserId();
 	}
 
 	/**
@@ -304,7 +272,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public String getStatusByUserName() {
-		return _assignment.getStatusByUserName();
+		return model.getStatusByUserName();
 	}
 
 	/**
@@ -314,7 +282,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public String getStatusByUserUuid() {
-		return _assignment.getStatusByUserUuid();
+		return model.getStatusByUserUuid();
 	}
 
 	/**
@@ -324,7 +292,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public Date getStatusDate() {
-		return _assignment.getStatusDate();
+		return model.getStatusDate();
 	}
 
 	/**
@@ -334,7 +302,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public String getTitle() {
-		return _assignment.getTitle();
+		return model.getTitle();
 	}
 
 	/**
@@ -345,7 +313,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public String getTitle(java.util.Locale locale) {
-		return _assignment.getTitle(locale);
+		return model.getTitle(locale);
 	}
 
 	/**
@@ -357,7 +325,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public String getTitle(java.util.Locale locale, boolean useDefault) {
-		return _assignment.getTitle(locale, useDefault);
+		return model.getTitle(locale, useDefault);
 	}
 
 	/**
@@ -368,7 +336,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public String getTitle(String languageId) {
-		return _assignment.getTitle(languageId);
+		return model.getTitle(languageId);
 	}
 
 	/**
@@ -380,17 +348,17 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public String getTitle(String languageId, boolean useDefault) {
-		return _assignment.getTitle(languageId, useDefault);
+		return model.getTitle(languageId, useDefault);
 	}
 
 	@Override
 	public String getTitleCurrentLanguageId() {
-		return _assignment.getTitleCurrentLanguageId();
+		return model.getTitleCurrentLanguageId();
 	}
 
 	@Override
 	public String getTitleCurrentValue() {
-		return _assignment.getTitleCurrentValue();
+		return model.getTitleCurrentValue();
 	}
 
 	/**
@@ -400,7 +368,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public Map<java.util.Locale, String> getTitleMap() {
-		return _assignment.getTitleMap();
+		return model.getTitleMap();
 	}
 
 	/**
@@ -410,7 +378,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public long getUserId() {
-		return _assignment.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -420,7 +388,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public String getUserName() {
-		return _assignment.getUserName();
+		return model.getUserName();
 	}
 
 	/**
@@ -430,7 +398,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public String getUserUuid() {
-		return _assignment.getUserUuid();
+		return model.getUserUuid();
 	}
 
 	/**
@@ -440,12 +408,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public String getUuid() {
-		return _assignment.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _assignment.hashCode();
+		return model.getUuid();
 	}
 
 	/**
@@ -455,12 +418,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public boolean isApproved() {
-		return _assignment.isApproved();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _assignment.isCachedModel();
+		return model.isApproved();
 	}
 
 	/**
@@ -470,7 +428,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public boolean isDenied() {
-		return _assignment.isDenied();
+		return model.isDenied();
 	}
 
 	/**
@@ -480,12 +438,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public boolean isDraft() {
-		return _assignment.isDraft();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _assignment.isEscapedModel();
+		return model.isDraft();
 	}
 
 	/**
@@ -495,7 +448,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public boolean isExpired() {
-		return _assignment.isExpired();
+		return model.isExpired();
 	}
 
 	/**
@@ -505,7 +458,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public boolean isInactive() {
-		return _assignment.isInactive();
+		return model.isInactive();
 	}
 
 	/**
@@ -515,12 +468,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public boolean isIncomplete() {
-		return _assignment.isIncomplete();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _assignment.isNew();
+		return model.isIncomplete();
 	}
 
 	/**
@@ -530,7 +478,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public boolean isPending() {
-		return _assignment.isPending();
+		return model.isPending();
 	}
 
 	/**
@@ -540,19 +488,19 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public boolean isScheduled() {
-		return _assignment.isScheduled();
+		return model.isScheduled();
 	}
 
 	@Override
 	public void persist() {
-		_assignment.persist();
+		model.persist();
 	}
 
 	@Override
 	public void prepareLocalizedFieldsForImport()
 		throws com.liferay.portal.kernel.exception.LocaleException {
 
-		_assignment.prepareLocalizedFieldsForImport();
+		model.prepareLocalizedFieldsForImport();
 	}
 
 	@Override
@@ -560,7 +508,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 			java.util.Locale defaultImportLocale)
 		throws com.liferay.portal.kernel.exception.LocaleException {
 
-		_assignment.prepareLocalizedFieldsForImport(defaultImportLocale);
+		model.prepareLocalizedFieldsForImport(defaultImportLocale);
 	}
 
 	/**
@@ -570,12 +518,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setAssignmentId(long assignmentId) {
-		_assignment.setAssignmentId(assignmentId);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_assignment.setCachedModel(cachedModel);
+		model.setAssignmentId(assignmentId);
 	}
 
 	/**
@@ -585,7 +528,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setCompanyId(long companyId) {
-		_assignment.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -595,7 +538,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setCreateDate(Date createDate) {
-		_assignment.setCreateDate(createDate);
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -605,7 +548,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setDescription(String description) {
-		_assignment.setDescription(description);
+		model.setDescription(description);
 	}
 
 	/**
@@ -615,24 +558,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setDueDate(Date dueDate) {
-		_assignment.setDueDate(dueDate);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_assignment.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_assignment.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_assignment.setExpandoBridgeAttributes(serviceContext);
+		model.setDueDate(dueDate);
 	}
 
 	/**
@@ -642,7 +568,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setGroupId(long groupId) {
-		_assignment.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -652,12 +578,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
-		_assignment.setModifiedDate(modifiedDate);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_assignment.setNew(n);
+		model.setModifiedDate(modifiedDate);
 	}
 
 	/**
@@ -667,12 +588,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_assignment.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_assignment.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -682,7 +598,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setStatus(int status) {
-		_assignment.setStatus(status);
+		model.setStatus(status);
 	}
 
 	/**
@@ -692,7 +608,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setStatusByUserId(long statusByUserId) {
-		_assignment.setStatusByUserId(statusByUserId);
+		model.setStatusByUserId(statusByUserId);
 	}
 
 	/**
@@ -702,7 +618,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setStatusByUserName(String statusByUserName) {
-		_assignment.setStatusByUserName(statusByUserName);
+		model.setStatusByUserName(statusByUserName);
 	}
 
 	/**
@@ -712,7 +628,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setStatusByUserUuid(String statusByUserUuid) {
-		_assignment.setStatusByUserUuid(statusByUserUuid);
+		model.setStatusByUserUuid(statusByUserUuid);
 	}
 
 	/**
@@ -722,7 +638,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setStatusDate(Date statusDate) {
-		_assignment.setStatusDate(statusDate);
+		model.setStatusDate(statusDate);
 	}
 
 	/**
@@ -732,7 +648,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setTitle(String title) {
-		_assignment.setTitle(title);
+		model.setTitle(title);
 	}
 
 	/**
@@ -743,7 +659,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setTitle(String title, java.util.Locale locale) {
-		_assignment.setTitle(title, locale);
+		model.setTitle(title, locale);
 	}
 
 	/**
@@ -757,12 +673,12 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	public void setTitle(
 		String title, java.util.Locale locale, java.util.Locale defaultLocale) {
 
-		_assignment.setTitle(title, locale, defaultLocale);
+		model.setTitle(title, locale, defaultLocale);
 	}
 
 	@Override
 	public void setTitleCurrentLanguageId(String languageId) {
-		_assignment.setTitleCurrentLanguageId(languageId);
+		model.setTitleCurrentLanguageId(languageId);
 	}
 
 	/**
@@ -772,7 +688,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setTitleMap(Map<java.util.Locale, String> titleMap) {
-		_assignment.setTitleMap(titleMap);
+		model.setTitleMap(titleMap);
 	}
 
 	/**
@@ -786,7 +702,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 		Map<java.util.Locale, String> titleMap,
 		java.util.Locale defaultLocale) {
 
-		_assignment.setTitleMap(titleMap, defaultLocale);
+		model.setTitleMap(titleMap, defaultLocale);
 	}
 
 	/**
@@ -796,7 +712,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setUserId(long userId) {
-		_assignment.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -806,7 +722,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setUserName(String userName) {
-		_assignment.setUserName(userName);
+		model.setUserName(userName);
 	}
 
 	/**
@@ -816,7 +732,7 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setUserUuid(String userUuid) {
-		_assignment.setUserUuid(userUuid);
+		model.setUserUuid(userUuid);
 	}
 
 	/**
@@ -826,80 +742,17 @@ public class AssignmentWrapper implements Assignment, ModelWrapper<Assignment> {
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_assignment.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel<Assignment>
-		toCacheModel() {
-
-		return _assignment.toCacheModel();
-	}
-
-	@Override
-	public Assignment toEscapedModel() {
-		return new AssignmentWrapper(_assignment.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _assignment.toString();
-	}
-
-	@Override
-	public Assignment toUnescapedModel() {
-		return new AssignmentWrapper(_assignment.toUnescapedModel());
-	}
-
-	@Override
-	public String toXmlString() {
-		return _assignment.toXmlString();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
-
-		if (!(object instanceof AssignmentWrapper)) {
-			return false;
-		}
-
-		AssignmentWrapper assignmentWrapper = (AssignmentWrapper)object;
-
-		if (Objects.equals(_assignment, assignmentWrapper._assignment)) {
-			return true;
-		}
-
-		return false;
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return _assignment.getStagedModelType();
+		return model.getStagedModelType();
 	}
 
 	@Override
-	public Assignment getWrappedModel() {
-		return _assignment;
+	protected AssignmentWrapper wrap(Assignment assignment) {
+		return new AssignmentWrapper(assignment);
 	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _assignment.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _assignment.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_assignment.resetOriginalValues();
-	}
-
-	private final Assignment _assignment;
 
 }

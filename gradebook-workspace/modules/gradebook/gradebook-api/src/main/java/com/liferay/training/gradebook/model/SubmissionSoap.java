@@ -24,8 +24,10 @@ import java.util.List;
  * This class is used by SOAP remote services, specifically {@link com.liferay.training.gradebook.service.http.SubmissionServiceSoap}.
  *
  * @author Brian Wing Shun Chan
+ * @deprecated As of Athanasius (7.3.x), with no direct replacement
  * @generated
  */
+@Deprecated
 public class SubmissionSoap implements Serializable {
 
 	public static SubmissionSoap toSoapModel(Submission model) {
@@ -41,7 +43,7 @@ public class SubmissionSoap implements Serializable {
 		soapModel.setModifiedDate(model.getModifiedDate());
 		soapModel.setStudentId(model.getStudentId());
 		soapModel.setSubmitDate(model.getSubmitDate());
-		soapModel.setSubmisionText(model.getSubmisionText());
+		soapModel.setSubmissionText(model.getSubmissionText());
 		soapModel.setComment(model.getComment());
 		soapModel.setGrade(model.getGrade());
 		soapModel.setAssignmentId(model.getAssignmentId());
@@ -178,12 +180,12 @@ public class SubmissionSoap implements Serializable {
 		_submitDate = submitDate;
 	}
 
-	public String getSubmisionText() {
-		return _submisionText;
+	public String getSubmissionText() {
+		return _submissionText;
 	}
 
-	public void setSubmisionText(String submisionText) {
-		_submisionText = submisionText;
+	public void setSubmissionText(String submissionText) {
+		_submissionText = submissionText;
 	}
 
 	public String getComment() {
@@ -220,7 +222,7 @@ public class SubmissionSoap implements Serializable {
 	private Date _modifiedDate;
 	private long _studentId;
 	private Date _submitDate;
-	private String _submisionText;
+	private String _submissionText;
 	private String _comment;
 	private int _grade;
 	private long _assignmentId;

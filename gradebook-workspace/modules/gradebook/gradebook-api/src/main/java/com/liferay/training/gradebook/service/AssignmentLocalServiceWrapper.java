@@ -74,6 +74,17 @@ public class AssignmentLocalServiceWrapper
 	}
 
 	/**
+	 * @throws PortalException
+	 */
+	@Override
+	public com.liferay.portal.kernel.model.PersistedModel createPersistedModel(
+			java.io.Serializable primaryKeyObj)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _assignmentLocalService.createPersistedModel(primaryKeyObj);
+	}
+
+	/**
 	 * Deletes the assignment from the database. Also notifies the appropriate model listeners.
 	 *
 	 * <p>

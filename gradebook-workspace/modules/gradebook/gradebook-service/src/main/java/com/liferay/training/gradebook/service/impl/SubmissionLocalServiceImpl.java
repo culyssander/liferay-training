@@ -14,6 +14,7 @@
 
 package com.liferay.training.gradebook.service.impl;
 
+import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -24,26 +25,33 @@ import com.liferay.training.gradebook.service.base.SubmissionLocalServiceBaseImp
 import java.util.Date;
 import java.util.List;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * The implementation of the submission local service.
  *
  * <p>
- * All custom service methods should be put in this class. Whenever methods are
- * added, rerun ServiceBuilder to copy their definitions into the
- * {@link com.liferay.training.gradebook.service.SubmissionLocalService}
- * interface.
+ * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>com.liferay.training.gradebook.service.SubmissionLocalService</code> interface.
  *
  * <p>
- * This is a local service. Methods of this service will not have security
- * checks based on the propagated JAAS credentials because this service can only
- * be accessed from within the same VM.
+ * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
  * </p>
  *
  * @author Brian Wing Shun Chan
  * @see SubmissionLocalServiceBaseImpl
- * @see com.liferay.training.gradebook.service.SubmissionLocalServiceUtil
  */
+@Component(
+	property = "model.class.name=com.liferay.training.gradebook.model.Submission",
+	service = AopService.class
+)
 public class SubmissionLocalServiceImpl extends SubmissionLocalServiceBaseImpl {
+
+	/*
+	 * NOTE FOR DEVELOPERS:
+	 *
+	 * Never reference this class directly. Use <code>com.liferay.training.gradebook.service.SubmissionLocalService</code> via injection or a <code>org.osgi.util.tracker.ServiceTracker</code> or use <code>com.liferay.training.gradebook.service.SubmissionLocalServiceUtil</code>.
+	 */
+	
 
 	@Override
 	public Submission addSubmission(long assignmentId, long studentId, String submissionText,
@@ -54,7 +62,7 @@ public class SubmissionLocalServiceImpl extends SubmissionLocalServiceBaseImpl {
 		//
 		// Hint: use assignmentPersistence findBy finder methor or assignmentLocalService
 		
-		Assignment assignment = assignmentLocalService.getAssignment(assignmentId);
+		Assignment assignment = assignmentPersistence.fetchByPrimaryKey(assignmentId);
 		
 		//
 		// ( 2 ) - Get user.
@@ -105,7 +113,7 @@ public class SubmissionLocalServiceImpl extends SubmissionLocalServiceBaseImpl {
 		submission.setUserId(userId);
 		submission.setGrade(-1);
 		submission.setStudentId(studentId);
-		submission.setSubmisionText(submissionText);
+		submission.setSubmissionText(submissionText);
 		submission.setSubmitDate(new Date());
 		
 		//
@@ -215,11 +223,9 @@ public class SubmissionLocalServiceImpl extends SubmissionLocalServiceBaseImpl {
 		// ( 18 ) - Update following fields: submissionText, submitDate, modifiedDate.
 		//
 		// Hint: use submission setters, set submitDate and modifiedDate to current date
-		
-		submission.setSubmisionText(submissionText);
+		submission.setSubmissionText(submissionText);
 		submission.setSubmitDate(new Date());
 		submission.setModifiedDate(new Date());
-		
 		
 		//
 		// ( 19 ) - Persist the entity.

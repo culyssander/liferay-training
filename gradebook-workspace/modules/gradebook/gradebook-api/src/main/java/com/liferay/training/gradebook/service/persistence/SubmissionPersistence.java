@@ -14,16 +14,11 @@
 
 package com.liferay.training.gradebook.service.persistence;
 
-import aQute.bnd.annotation.ProviderType;
-
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
 import com.liferay.training.gradebook.exception.NoSuchSubmissionException;
 import com.liferay.training.gradebook.model.Submission;
 
-import java.io.Serializable;
-
-import java.util.Map;
-import java.util.Set;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * The persistence interface for the submission service.
@@ -44,9 +39,6 @@ public interface SubmissionPersistence extends BasePersistence<Submission> {
 	 *
 	 * Never modify or reference this interface directly. Always use {@link SubmissionUtil} to access the submission persistence. Modify <code>service.xml</code> and rerun ServiceBuilder to regenerate this interface.
 	 */
-	@Override
-	public Map<Serializable, Submission> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys);
 
 	/**
 	 * Returns all the submissions where uuid = &#63;.
@@ -539,149 +531,6 @@ public interface SubmissionPersistence extends BasePersistence<Submission> {
 	public int countByGroupId(long groupId);
 
 	/**
-	 * Returns all the submissions where studentId = &#63;.
-	 *
-	 * @param studentId the student ID
-	 * @return the matching submissions
-	 */
-	public java.util.List<Submission> findByStudentId(long studentId);
-
-	/**
-	 * Returns a range of all the submissions where studentId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SubmissionModelImpl</code>.
-	 * </p>
-	 *
-	 * @param studentId the student ID
-	 * @param start the lower bound of the range of submissions
-	 * @param end the upper bound of the range of submissions (not inclusive)
-	 * @return the range of matching submissions
-	 */
-	public java.util.List<Submission> findByStudentId(
-		long studentId, int start, int end);
-
-	/**
-	 * Returns an ordered range of all the submissions where studentId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SubmissionModelImpl</code>.
-	 * </p>
-	 *
-	 * @param studentId the student ID
-	 * @param start the lower bound of the range of submissions
-	 * @param end the upper bound of the range of submissions (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @return the ordered range of matching submissions
-	 */
-	public java.util.List<Submission> findByStudentId(
-		long studentId, int start, int end,
-		com.liferay.portal.kernel.util.OrderByComparator<Submission>
-			orderByComparator);
-
-	/**
-	 * Returns an ordered range of all the submissions where studentId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SubmissionModelImpl</code>.
-	 * </p>
-	 *
-	 * @param studentId the student ID
-	 * @param start the lower bound of the range of submissions
-	 * @param end the upper bound of the range of submissions (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param useFinderCache whether to use the finder cache
-	 * @return the ordered range of matching submissions
-	 */
-	public java.util.List<Submission> findByStudentId(
-		long studentId, int start, int end,
-		com.liferay.portal.kernel.util.OrderByComparator<Submission>
-			orderByComparator,
-		boolean useFinderCache);
-
-	/**
-	 * Returns the first submission in the ordered set where studentId = &#63;.
-	 *
-	 * @param studentId the student ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the first matching submission
-	 * @throws NoSuchSubmissionException if a matching submission could not be found
-	 */
-	public Submission findByStudentId_First(
-			long studentId,
-			com.liferay.portal.kernel.util.OrderByComparator<Submission>
-				orderByComparator)
-		throws NoSuchSubmissionException;
-
-	/**
-	 * Returns the first submission in the ordered set where studentId = &#63;.
-	 *
-	 * @param studentId the student ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the first matching submission, or <code>null</code> if a matching submission could not be found
-	 */
-	public Submission fetchByStudentId_First(
-		long studentId,
-		com.liferay.portal.kernel.util.OrderByComparator<Submission>
-			orderByComparator);
-
-	/**
-	 * Returns the last submission in the ordered set where studentId = &#63;.
-	 *
-	 * @param studentId the student ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the last matching submission
-	 * @throws NoSuchSubmissionException if a matching submission could not be found
-	 */
-	public Submission findByStudentId_Last(
-			long studentId,
-			com.liferay.portal.kernel.util.OrderByComparator<Submission>
-				orderByComparator)
-		throws NoSuchSubmissionException;
-
-	/**
-	 * Returns the last submission in the ordered set where studentId = &#63;.
-	 *
-	 * @param studentId the student ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the last matching submission, or <code>null</code> if a matching submission could not be found
-	 */
-	public Submission fetchByStudentId_Last(
-		long studentId,
-		com.liferay.portal.kernel.util.OrderByComparator<Submission>
-			orderByComparator);
-
-	/**
-	 * Returns the submissions before and after the current submission in the ordered set where studentId = &#63;.
-	 *
-	 * @param submissionId the primary key of the current submission
-	 * @param studentId the student ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the previous, current, and next submission
-	 * @throws NoSuchSubmissionException if a submission with the primary key could not be found
-	 */
-	public Submission[] findByStudentId_PrevAndNext(
-			long submissionId, long studentId,
-			com.liferay.portal.kernel.util.OrderByComparator<Submission>
-				orderByComparator)
-		throws NoSuchSubmissionException;
-
-	/**
-	 * Removes all the submissions where studentId = &#63; from the database.
-	 *
-	 * @param studentId the student ID
-	 */
-	public void removeByStudentId(long studentId);
-
-	/**
-	 * Returns the number of submissions where studentId = &#63;.
-	 *
-	 * @param studentId the student ID
-	 * @return the number of matching submissions
-	 */
-	public int countByStudentId(long studentId);
-
-	/**
 	 * Returns all the submissions where groupId = &#63; and assignmentId = &#63;.
 	 *
 	 * @param groupId the group ID
@@ -1111,8 +960,5 @@ public interface SubmissionPersistence extends BasePersistence<Submission> {
 	 * @return the number of submissions
 	 */
 	public int countAll();
-
-	@Override
-	public Set<String> getBadColumnNames();
 
 }

@@ -14,20 +14,15 @@
 
 package com.liferay.training.gradebook.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.model.BaseModel;
-import com.liferay.portal.kernel.model.CacheModel;
 import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.model.ShardedModel;
 import com.liferay.portal.kernel.model.StagedAuditedModel;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
 
 import java.util.Date;
+
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * The base model interface for the Submission service. Represents a row in the &quot;Gradebook_Submission&quot; database table, with each column mapped to a property of this class.
@@ -238,19 +233,19 @@ public interface SubmissionModel
 	public void setSubmitDate(Date submitDate);
 
 	/**
-	 * Returns the submision text of this submission.
+	 * Returns the submission text of this submission.
 	 *
-	 * @return the submision text of this submission
+	 * @return the submission text of this submission
 	 */
 	@AutoEscape
-	public String getSubmisionText();
+	public String getSubmissionText();
 
 	/**
-	 * Sets the submision text of this submission.
+	 * Sets the submission text of this submission.
 	 *
-	 * @param submisionText the submision text of this submission
+	 * @param submissionText the submission text of this submission
 	 */
-	public void setSubmisionText(String submisionText);
+	public void setSubmissionText(String submissionText);
 
 	/**
 	 * Returns the comment of this submission.
@@ -294,62 +289,5 @@ public interface SubmissionModel
 	 * @param assignmentId the assignment ID of this submission
 	 */
 	public void setAssignmentId(long assignmentId);
-
-	@Override
-	public boolean isNew();
-
-	@Override
-	public void setNew(boolean n);
-
-	@Override
-	public boolean isCachedModel();
-
-	@Override
-	public void setCachedModel(boolean cachedModel);
-
-	@Override
-	public boolean isEscapedModel();
-
-	@Override
-	public Serializable getPrimaryKeyObj();
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj);
-
-	@Override
-	public ExpandoBridge getExpandoBridge();
-
-	@Override
-	public void setExpandoBridgeAttributes(BaseModel<?> baseModel);
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge);
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext);
-
-	@Override
-	public Object clone();
-
-	@Override
-	public int compareTo(Submission submission);
-
-	@Override
-	public int hashCode();
-
-	@Override
-	public CacheModel<Submission> toCacheModel();
-
-	@Override
-	public Submission toEscapedModel();
-
-	@Override
-	public Submission toUnescapedModel();
-
-	@Override
-	public String toString();
-
-	@Override
-	public String toXmlString();
 
 }

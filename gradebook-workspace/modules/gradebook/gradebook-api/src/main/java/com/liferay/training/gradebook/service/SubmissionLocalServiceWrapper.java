@@ -60,6 +60,17 @@ public class SubmissionLocalServiceWrapper
 	}
 
 	/**
+	 * @throws PortalException
+	 */
+	@Override
+	public com.liferay.portal.kernel.model.PersistedModel createPersistedModel(
+			java.io.Serializable primaryKeyObj)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _submissionLocalService.createPersistedModel(primaryKeyObj);
+	}
+
+	/**
 	 * Creates a new submission with the primary key. Does not add the submission to the database.
 	 *
 	 * @param submissionId the primary key for the new submission

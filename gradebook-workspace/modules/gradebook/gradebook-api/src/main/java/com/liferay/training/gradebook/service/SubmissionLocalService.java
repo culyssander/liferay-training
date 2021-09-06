@@ -14,8 +14,6 @@
 
 package com.liferay.training.gradebook.service;
 
-import aQute.bnd.annotation.ProviderType;
-
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -39,6 +37,8 @@ import com.liferay.training.gradebook.model.Submission;
 import java.io.Serializable;
 
 import java.util.List;
+
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * Provides the local service interface for Submission. Methods of this
@@ -80,6 +80,12 @@ public interface SubmissionLocalService
 	 */
 	@Indexable(type = IndexableType.REINDEX)
 	public Submission addSubmission(Submission submission);
+
+	/**
+	 * @throws PortalException
+	 */
+	public PersistedModel createPersistedModel(Serializable primaryKeyObj)
+		throws PortalException;
 
 	/**
 	 * Creates a new submission with the primary key. Does not add the submission to the database.

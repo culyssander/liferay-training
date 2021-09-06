@@ -14,16 +14,11 @@
 
 package com.liferay.training.gradebook.service.persistence;
 
-import aQute.bnd.annotation.ProviderType;
-
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
 import com.liferay.training.gradebook.exception.NoSuchAssignmentException;
 import com.liferay.training.gradebook.model.Assignment;
 
-import java.io.Serializable;
-
-import java.util.Map;
-import java.util.Set;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * The persistence interface for the assignment service.
@@ -44,9 +39,6 @@ public interface AssignmentPersistence extends BasePersistence<Assignment> {
 	 *
 	 * Never modify or reference this interface directly. Always use {@link AssignmentUtil} to access the assignment persistence. Modify <code>service.xml</code> and rerun ServiceBuilder to regenerate this interface.
 	 */
-	@Override
-	public Map<Serializable, Assignment> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys);
 
 	/**
 	 * Returns all the assignments where uuid = &#63;.
@@ -954,8 +946,5 @@ public interface AssignmentPersistence extends BasePersistence<Assignment> {
 	 * @return the number of assignments
 	 */
 	public int countAll();
-
-	@Override
-	public Set<String> getBadColumnNames();
 
 }

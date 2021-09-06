@@ -14,9 +14,9 @@
 
 package com.liferay.training.gradebook.model.impl;
 
+import com.liferay.petra.lang.HashUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.model.CacheModel;
-import com.liferay.portal.kernel.util.HashUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.training.gradebook.model.Submission;
 
 import java.io.Externalizable;
@@ -84,8 +84,8 @@ public class SubmissionCacheModel
 		sb.append(studentId);
 		sb.append(", submitDate=");
 		sb.append(submitDate);
-		sb.append(", submisionText=");
-		sb.append(submisionText);
+		sb.append(", submissionText=");
+		sb.append(submissionText);
 		sb.append(", comment=");
 		sb.append(comment);
 		sb.append(", grade=");
@@ -143,11 +143,11 @@ public class SubmissionCacheModel
 			submissionImpl.setSubmitDate(new Date(submitDate));
 		}
 
-		if (submisionText == null) {
-			submissionImpl.setSubmisionText("");
+		if (submissionText == null) {
+			submissionImpl.setSubmissionText("");
 		}
 		else {
-			submissionImpl.setSubmisionText(submisionText);
+			submissionImpl.setSubmissionText(submissionText);
 		}
 
 		if (comment == null) {
@@ -182,7 +182,7 @@ public class SubmissionCacheModel
 
 		studentId = objectInput.readLong();
 		submitDate = objectInput.readLong();
-		submisionText = objectInput.readUTF();
+		submissionText = objectInput.readUTF();
 		comment = objectInput.readUTF();
 
 		grade = objectInput.readInt();
@@ -220,11 +220,11 @@ public class SubmissionCacheModel
 		objectOutput.writeLong(studentId);
 		objectOutput.writeLong(submitDate);
 
-		if (submisionText == null) {
+		if (submissionText == null) {
 			objectOutput.writeUTF("");
 		}
 		else {
-			objectOutput.writeUTF(submisionText);
+			objectOutput.writeUTF(submissionText);
 		}
 
 		if (comment == null) {
@@ -249,7 +249,7 @@ public class SubmissionCacheModel
 	public long modifiedDate;
 	public long studentId;
 	public long submitDate;
-	public String submisionText;
+	public String submissionText;
 	public String comment;
 	public int grade;
 	public long assignmentId;

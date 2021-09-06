@@ -17,6 +17,7 @@ package com.liferay.training.gradebook.model.impl;
 import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.expando.kernel.util.ExpandoBridgeFactoryUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.LocaleException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -32,7 +33,6 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.training.gradebook.model.Assignment;
@@ -131,37 +131,59 @@ public class AssignmentModelImpl
 
 	public static final String TX_MANAGER = "liferayTransactionManager";
 
-	public static final boolean ENTITY_CACHE_ENABLED = GetterUtil.getBoolean(
-		com.liferay.training.gradebook.service.util.ServiceProps.get(
-			"value.object.entity.cache.enabled.com.liferay.training.gradebook.model.Assignment"),
-		true);
-
-	public static final boolean FINDER_CACHE_ENABLED = GetterUtil.getBoolean(
-		com.liferay.training.gradebook.service.util.ServiceProps.get(
-			"value.object.finder.cache.enabled.com.liferay.training.gradebook.model.Assignment"),
-		true);
-
-	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(
-		com.liferay.training.gradebook.service.util.ServiceProps.get(
-			"value.object.column.bitmask.enabled.com.liferay.training.gradebook.model.Assignment"),
-		true);
-
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
 	public static final long COMPANYID_COLUMN_BITMASK = 1L;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
 	public static final long GROUPID_COLUMN_BITMASK = 2L;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
 	public static final long STATUS_COLUMN_BITMASK = 4L;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
 	public static final long UUID_COLUMN_BITMASK = 8L;
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *		#getColumnBitmask(String)}
+	 */
+	@Deprecated
 	public static final long ASSIGNMENTID_COLUMN_BITMASK = 16L;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
+	public static void setEntityCacheEnabled(boolean entityCacheEnabled) {
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
+	public static void setFinderCacheEnabled(boolean finderCacheEnabled) {
+	}
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
 	 *
 	 * @param soapModel the soap model instance to convert
 	 * @return the normal model instance
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
 	 */
+	@Deprecated
 	public static Assignment toModel(AssignmentSoap soapModel) {
 		if (soapModel == null) {
 			return null;
@@ -193,7 +215,9 @@ public class AssignmentModelImpl
 	 *
 	 * @param soapModels the soap model instances to convert
 	 * @return the normal model instances
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
 	 */
+	@Deprecated
 	public static List<Assignment> toModels(AssignmentSoap[] soapModels) {
 		if (soapModels == null) {
 			return null;
@@ -207,10 +231,6 @@ public class AssignmentModelImpl
 
 		return models;
 	}
-
-	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(
-		com.liferay.training.gradebook.service.util.ServiceProps.get(
-			"lock.expiration.time.com.liferay.training.gradebook.model.Assignment"));
 
 	public AssignmentModelImpl() {
 	}
@@ -262,9 +282,6 @@ public class AssignmentModelImpl
 			attributes.put(
 				attributeName, attributeGetterFunction.apply((Assignment)this));
 		}
-
-		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
-		attributes.put("finderCacheEnabled", isFinderCacheEnabled());
 
 		return attributes;
 	}
@@ -338,329 +355,64 @@ public class AssignmentModelImpl
 		Map<String, BiConsumer<Assignment, ?>> attributeSetterBiConsumers =
 			new LinkedHashMap<String, BiConsumer<Assignment, ?>>();
 
-		attributeGetterFunctions.put(
-			"uuid",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getUuid();
-				}
-
-			});
+		attributeGetterFunctions.put("uuid", Assignment::getUuid);
 		attributeSetterBiConsumers.put(
-			"uuid",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(Assignment assignment, Object uuidObject) {
-					assignment.setUuid((String)uuidObject);
-				}
-
-			});
+			"uuid", (BiConsumer<Assignment, String>)Assignment::setUuid);
 		attributeGetterFunctions.put(
-			"assignmentId",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getAssignmentId();
-				}
-
-			});
+			"assignmentId", Assignment::getAssignmentId);
 		attributeSetterBiConsumers.put(
 			"assignmentId",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(
-					Assignment assignment, Object assignmentIdObject) {
-
-					assignment.setAssignmentId((Long)assignmentIdObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"groupId",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getGroupId();
-				}
-
-			});
+			(BiConsumer<Assignment, Long>)Assignment::setAssignmentId);
+		attributeGetterFunctions.put("groupId", Assignment::getGroupId);
 		attributeSetterBiConsumers.put(
-			"groupId",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(
-					Assignment assignment, Object groupIdObject) {
-
-					assignment.setGroupId((Long)groupIdObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"companyId",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getCompanyId();
-				}
-
-			});
+			"groupId", (BiConsumer<Assignment, Long>)Assignment::setGroupId);
+		attributeGetterFunctions.put("companyId", Assignment::getCompanyId);
 		attributeSetterBiConsumers.put(
 			"companyId",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(
-					Assignment assignment, Object companyIdObject) {
-
-					assignment.setCompanyId((Long)companyIdObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"userId",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getUserId();
-				}
-
-			});
+			(BiConsumer<Assignment, Long>)Assignment::setCompanyId);
+		attributeGetterFunctions.put("userId", Assignment::getUserId);
 		attributeSetterBiConsumers.put(
-			"userId",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(Assignment assignment, Object userIdObject) {
-					assignment.setUserId((Long)userIdObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"userName",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getUserName();
-				}
-
-			});
+			"userId", (BiConsumer<Assignment, Long>)Assignment::setUserId);
+		attributeGetterFunctions.put("userName", Assignment::getUserName);
 		attributeSetterBiConsumers.put(
 			"userName",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(
-					Assignment assignment, Object userNameObject) {
-
-					assignment.setUserName((String)userNameObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"createDate",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getCreateDate();
-				}
-
-			});
+			(BiConsumer<Assignment, String>)Assignment::setUserName);
+		attributeGetterFunctions.put("createDate", Assignment::getCreateDate);
 		attributeSetterBiConsumers.put(
 			"createDate",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(
-					Assignment assignment, Object createDateObject) {
-
-					assignment.setCreateDate((Date)createDateObject);
-				}
-
-			});
+			(BiConsumer<Assignment, Date>)Assignment::setCreateDate);
 		attributeGetterFunctions.put(
-			"modifiedDate",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getModifiedDate();
-				}
-
-			});
+			"modifiedDate", Assignment::getModifiedDate);
 		attributeSetterBiConsumers.put(
 			"modifiedDate",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(
-					Assignment assignment, Object modifiedDateObject) {
-
-					assignment.setModifiedDate((Date)modifiedDateObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"title",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getTitle();
-				}
-
-			});
+			(BiConsumer<Assignment, Date>)Assignment::setModifiedDate);
+		attributeGetterFunctions.put("title", Assignment::getTitle);
 		attributeSetterBiConsumers.put(
-			"title",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(Assignment assignment, Object titleObject) {
-					assignment.setTitle((String)titleObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"description",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getDescription();
-				}
-
-			});
+			"title", (BiConsumer<Assignment, String>)Assignment::setTitle);
+		attributeGetterFunctions.put("description", Assignment::getDescription);
 		attributeSetterBiConsumers.put(
 			"description",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(
-					Assignment assignment, Object descriptionObject) {
-
-					assignment.setDescription((String)descriptionObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"dueDate",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getDueDate();
-				}
-
-			});
+			(BiConsumer<Assignment, String>)Assignment::setDescription);
+		attributeGetterFunctions.put("dueDate", Assignment::getDueDate);
 		attributeSetterBiConsumers.put(
-			"dueDate",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(
-					Assignment assignment, Object dueDateObject) {
-
-					assignment.setDueDate((Date)dueDateObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"status",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getStatus();
-				}
-
-			});
+			"dueDate", (BiConsumer<Assignment, Date>)Assignment::setDueDate);
+		attributeGetterFunctions.put("status", Assignment::getStatus);
 		attributeSetterBiConsumers.put(
-			"status",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(Assignment assignment, Object statusObject) {
-					assignment.setStatus((Integer)statusObject);
-				}
-
-			});
+			"status", (BiConsumer<Assignment, Integer>)Assignment::setStatus);
 		attributeGetterFunctions.put(
-			"statusByUserId",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getStatusByUserId();
-				}
-
-			});
+			"statusByUserId", Assignment::getStatusByUserId);
 		attributeSetterBiConsumers.put(
 			"statusByUserId",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(
-					Assignment assignment, Object statusByUserIdObject) {
-
-					assignment.setStatusByUserId((Long)statusByUserIdObject);
-				}
-
-			});
+			(BiConsumer<Assignment, Long>)Assignment::setStatusByUserId);
 		attributeGetterFunctions.put(
-			"statusByUserName",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getStatusByUserName();
-				}
-
-			});
+			"statusByUserName", Assignment::getStatusByUserName);
 		attributeSetterBiConsumers.put(
 			"statusByUserName",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(
-					Assignment assignment, Object statusByUserNameObject) {
-
-					assignment.setStatusByUserName(
-						(String)statusByUserNameObject);
-				}
-
-			});
-		attributeGetterFunctions.put(
-			"statusDate",
-			new Function<Assignment, Object>() {
-
-				@Override
-				public Object apply(Assignment assignment) {
-					return assignment.getStatusDate();
-				}
-
-			});
+			(BiConsumer<Assignment, String>)Assignment::setStatusByUserName);
+		attributeGetterFunctions.put("statusDate", Assignment::getStatusDate);
 		attributeSetterBiConsumers.put(
 			"statusDate",
-			new BiConsumer<Assignment, Object>() {
-
-				@Override
-				public void accept(
-					Assignment assignment, Object statusDateObject) {
-
-					assignment.setStatusDate((Date)statusDateObject);
-				}
-
-			});
+			(BiConsumer<Assignment, Date>)Assignment::setStatusDate);
 
 		_attributeGetterFunctions = Collections.unmodifiableMap(
 			attributeGetterFunctions);
@@ -681,17 +433,20 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setUuid(String uuid) {
-		_columnBitmask |= UUID_COLUMN_BITMASK;
-
-		if (_originalUuid == null) {
-			_originalUuid = _uuid;
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
 		}
 
 		_uuid = uuid;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
 	public String getOriginalUuid() {
-		return GetterUtil.getString(_originalUuid);
+		return getColumnOriginalValue("uuid_");
 	}
 
 	@JSON
@@ -702,6 +457,10 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setAssignmentId(long assignmentId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_assignmentId = assignmentId;
 	}
 
@@ -713,19 +472,20 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setGroupId(long groupId) {
-		_columnBitmask |= GROUPID_COLUMN_BITMASK;
-
-		if (!_setOriginalGroupId) {
-			_setOriginalGroupId = true;
-
-			_originalGroupId = _groupId;
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
 		}
 
 		_groupId = groupId;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
 	public long getOriginalGroupId() {
-		return _originalGroupId;
+		return GetterUtil.getLong(this.<Long>getColumnOriginalValue("groupId"));
 	}
 
 	@JSON
@@ -736,19 +496,21 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setCompanyId(long companyId) {
-		_columnBitmask |= COMPANYID_COLUMN_BITMASK;
-
-		if (!_setOriginalCompanyId) {
-			_setOriginalCompanyId = true;
-
-			_originalCompanyId = _companyId;
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
 		}
 
 		_companyId = companyId;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
 	public long getOriginalCompanyId() {
-		return _originalCompanyId;
+		return GetterUtil.getLong(
+			this.<Long>getColumnOriginalValue("companyId"));
 	}
 
 	@JSON
@@ -759,6 +521,10 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setUserId(long userId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_userId = userId;
 	}
 
@@ -791,6 +557,10 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setUserName(String userName) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_userName = userName;
 	}
 
@@ -802,6 +572,10 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setCreateDate(Date createDate) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_createDate = createDate;
 	}
 
@@ -818,6 +592,10 @@ public class AssignmentModelImpl
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
 		_setModifiedDate = true;
+
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
 
 		_modifiedDate = modifiedDate;
 	}
@@ -878,6 +656,10 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setTitle(String title) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_title = title;
 	}
 
@@ -940,6 +722,10 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setDescription(String description) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_description = description;
 	}
 
@@ -951,6 +737,10 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setDueDate(Date dueDate) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_dueDate = dueDate;
 	}
 
@@ -962,19 +752,21 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setStatus(int status) {
-		_columnBitmask |= STATUS_COLUMN_BITMASK;
-
-		if (!_setOriginalStatus) {
-			_setOriginalStatus = true;
-
-			_originalStatus = _status;
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
 		}
 
 		_status = status;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
 	public int getOriginalStatus() {
-		return _originalStatus;
+		return GetterUtil.getInteger(
+			this.<Integer>getColumnOriginalValue("status"));
 	}
 
 	@JSON
@@ -985,6 +777,10 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setStatusByUserId(long statusByUserId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_statusByUserId = statusByUserId;
 	}
 
@@ -1017,6 +813,10 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setStatusByUserName(String statusByUserName) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_statusByUserName = statusByUserName;
 	}
 
@@ -1028,6 +828,10 @@ public class AssignmentModelImpl
 
 	@Override
 	public void setStatusDate(Date statusDate) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
 		_statusDate = statusDate;
 	}
 
@@ -1118,6 +922,24 @@ public class AssignmentModelImpl
 	}
 
 	public long getColumnBitmask() {
+		if (_columnBitmask > 0) {
+			return _columnBitmask;
+		}
+
+		if ((_columnOriginalValues == null) ||
+			(_columnOriginalValues == Collections.EMPTY_MAP)) {
+
+			return 0;
+		}
+
+		for (Map.Entry<String, Object> entry :
+				_columnOriginalValues.entrySet()) {
+
+			if (entry.getValue() != getColumnValue(entry.getKey())) {
+				_columnBitmask |= _columnBitmasks.get(entry.getKey());
+			}
+		}
+
 		return _columnBitmask;
 	}
 
@@ -1282,33 +1104,29 @@ public class AssignmentModelImpl
 		return (int)getPrimaryKey();
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public boolean isEntityCacheEnabled() {
-		return ENTITY_CACHE_ENABLED;
+		return true;
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public boolean isFinderCacheEnabled() {
-		return FINDER_CACHE_ENABLED;
+		return true;
 	}
 
 	@Override
 	public void resetOriginalValues() {
-		_originalUuid = _uuid;
-
-		_originalGroupId = _groupId;
-
-		_setOriginalGroupId = false;
-
-		_originalCompanyId = _companyId;
-
-		_setOriginalCompanyId = false;
+		_columnOriginalValues = Collections.emptyMap();
 
 		_setModifiedDate = false;
-
-		_originalStatus = _status;
-
-		_setOriginalStatus = false;
 
 		_columnBitmask = 0;
 	}
@@ -1479,14 +1297,9 @@ public class AssignmentModelImpl
 	}
 
 	private String _uuid;
-	private String _originalUuid;
 	private long _assignmentId;
 	private long _groupId;
-	private long _originalGroupId;
-	private boolean _setOriginalGroupId;
 	private long _companyId;
-	private long _originalCompanyId;
-	private boolean _setOriginalCompanyId;
 	private long _userId;
 	private String _userName;
 	private Date _createDate;
@@ -1497,11 +1310,110 @@ public class AssignmentModelImpl
 	private String _description;
 	private Date _dueDate;
 	private int _status;
-	private int _originalStatus;
-	private boolean _setOriginalStatus;
 	private long _statusByUserId;
 	private String _statusByUserName;
 	private Date _statusDate;
+
+	public <T> T getColumnValue(String columnName) {
+		columnName = _attributeNames.getOrDefault(columnName, columnName);
+
+		Function<Assignment, Object> function = _attributeGetterFunctions.get(
+			columnName);
+
+		if (function == null) {
+			throw new IllegalArgumentException(
+				"No attribute getter function found for " + columnName);
+		}
+
+		return (T)function.apply((Assignment)this);
+	}
+
+	public <T> T getColumnOriginalValue(String columnName) {
+		if (_columnOriginalValues == null) {
+			return null;
+		}
+
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		return (T)_columnOriginalValues.get(columnName);
+	}
+
+	private void _setColumnOriginalValues() {
+		_columnOriginalValues = new HashMap<String, Object>();
+
+		_columnOriginalValues.put("uuid_", _uuid);
+		_columnOriginalValues.put("assignmentId", _assignmentId);
+		_columnOriginalValues.put("groupId", _groupId);
+		_columnOriginalValues.put("companyId", _companyId);
+		_columnOriginalValues.put("userId", _userId);
+		_columnOriginalValues.put("userName", _userName);
+		_columnOriginalValues.put("createDate", _createDate);
+		_columnOriginalValues.put("modifiedDate", _modifiedDate);
+		_columnOriginalValues.put("title", _title);
+		_columnOriginalValues.put("description", _description);
+		_columnOriginalValues.put("dueDate", _dueDate);
+		_columnOriginalValues.put("status", _status);
+		_columnOriginalValues.put("statusByUserId", _statusByUserId);
+		_columnOriginalValues.put("statusByUserName", _statusByUserName);
+		_columnOriginalValues.put("statusDate", _statusDate);
+	}
+
+	private static final Map<String, String> _attributeNames;
+
+	static {
+		Map<String, String> attributeNames = new HashMap<>();
+
+		attributeNames.put("uuid_", "uuid");
+
+		_attributeNames = Collections.unmodifiableMap(attributeNames);
+	}
+
+	private transient Map<String, Object> _columnOriginalValues;
+
+	public static long getColumnBitmask(String columnName) {
+		return _columnBitmasks.get(columnName);
+	}
+
+	private static final Map<String, Long> _columnBitmasks;
+
+	static {
+		Map<String, Long> columnBitmasks = new HashMap<>();
+
+		columnBitmasks.put("uuid_", 1L);
+
+		columnBitmasks.put("assignmentId", 2L);
+
+		columnBitmasks.put("groupId", 4L);
+
+		columnBitmasks.put("companyId", 8L);
+
+		columnBitmasks.put("userId", 16L);
+
+		columnBitmasks.put("userName", 32L);
+
+		columnBitmasks.put("createDate", 64L);
+
+		columnBitmasks.put("modifiedDate", 128L);
+
+		columnBitmasks.put("title", 256L);
+
+		columnBitmasks.put("description", 512L);
+
+		columnBitmasks.put("dueDate", 1024L);
+
+		columnBitmasks.put("status", 2048L);
+
+		columnBitmasks.put("statusByUserId", 4096L);
+
+		columnBitmasks.put("statusByUserName", 8192L);
+
+		columnBitmasks.put("statusDate", 16384L);
+
+		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
+	}
+
 	private long _columnBitmask;
 	private Assignment _escapedModel;
 

@@ -14,7 +14,18 @@
 
 package com.liferay.training.gradebook.service.impl;
 
+import com.liferay.portal.aop.AopService;
+import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.training.gradebook.model.Assignment;
 import com.liferay.training.gradebook.service.base.AssignmentServiceBaseImpl;
+
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The implementation of the assignment remote service.
@@ -29,6 +40,13 @@ import com.liferay.training.gradebook.service.base.AssignmentServiceBaseImpl;
  * @author Brian Wing Shun Chan
  * @see AssignmentServiceBaseImpl
  */
+@Component(
+	property = {
+		"json.web.service.context.name=gradebook",
+		"json.web.service.context.path=Assignment"
+	},
+	service = AopService.class
+)
 public class AssignmentServiceImpl extends AssignmentServiceBaseImpl {
 
 	/*
@@ -36,4 +54,40 @@ public class AssignmentServiceImpl extends AssignmentServiceBaseImpl {
 	 *
 	 * Never reference this class directly. Always use <code>com.liferay.training.gradebook.service.AssignmentServiceUtil</code> to access the assignment remote service.
 	 */
+	
+	@BeanReference
+	private AssignmentLocalServiceImpl assignmentLocalServiceImpl;
+	
+	public Assignment addAssignment(long groupId, Map<Locale, String> title, String description, Date dueDate, ServiceContext serviceContext) throws PortalException {
+
+		// [Permission checks will be added here later]
+		
+		return assignmentLocalServiceImpl.addAssignment(groupId, title, description, dueDate, serviceContext);
+//		return assignmentLocalService.addAssignment(groupId, title, description, dueDate, serviceContext);
+	}
+	
+	public Assignment deleteAssignment(long assignmentId) throws PortalException {
+		Assignment assignment = assignmentLocalService.getAssignment(assignmentId);
+		
+		// [Permission checks will be added here later]
+		
+		return assignmentLocalService.deleteAssignment(assignment);
+	}
+	
+	
+	public Assignment getAssignment(long assignmentId) throws PortalException {	
+		Assignment assignment = assignmentLocalService.getAssignment(assignmentId);
+		
+		// [Permission checks will be added here later]
+	
+		return assignment;
+	}
+	
+	public Assignment updateAssignment(long assignmentId, Map<Locale, String> titleMap, String description, Date dueDate, ServiceContext serviceContext) throws PortalException {
+
+		// [Permission checks will be added here later]
+		
+//		return assignmentLocalService.updateAssignment(assignmentId, titleMap, description, dueDate, serviceContext);
+		return assignmentLocalServiceImpl.updateAssignment(assignmentId, titleMap, description, dueDate, serviceContext);
+	}
 }
