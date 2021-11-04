@@ -1,5 +1,4 @@
 package com.liferay.training.gradebook.web.portlet.action;
-
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
@@ -15,6 +14,7 @@ import com.liferay.training.gradebook.service.AssignmentService;
 import com.liferay.training.gradebook.web.constants.GradebookPortletKeys;
 import com.liferay.training.gradebook.web.constants.MVCCommandNames;
 import com.liferay.training.gradebook.web.display.context.AssignmentsManagementToolbarDisplayContext;
+import com.liferay.training.gradebook.web.internal.security.permission.resource.AssignmentPermission;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class ViewAssignmentsMVCRenderCommand implements MVCRenderCommand {
 
-	@Override
+    @Override
     public String render(
         RenderRequest renderRequest, RenderResponse renderResponse)
         throws PortletException {
@@ -53,6 +53,11 @@ public class ViewAssignmentsMVCRenderCommand implements MVCRenderCommand {
         // Add Clay management toolbar related attributes.
 
         addManagementToolbarAttributes(renderRequest, renderResponse);
+
+        // Add permission checker.
+
+        renderRequest.setAttribute(
+            "assignmentPermission", _assignmentPermission);        
 
         return "/view.jsp";
     }
@@ -103,14 +108,14 @@ public class ViewAssignmentsMVCRenderCommand implements MVCRenderCommand {
 
         // Call the service to get the list of assignments.
 
-        List<Assignment> assignments =
+        List<Assignment> assigments =
             _assignmentService.getAssignmentsByKeywords(
                 themeDisplay.getScopeGroupId(), keywords, start, end,
                 comparator);
 
         // Set request attributes.
 
-        renderRequest.setAttribute("assignments", assignments);
+        renderRequest.setAttribute("assignments", assigments);
         renderRequest.setAttribute(
             "assignmentCount", _assignmentService.getAssignmentsCountByKeywords(
                 themeDisplay.getScopeGroupId(), keywords));
@@ -144,9 +149,11 @@ public class ViewAssignmentsMVCRenderCommand implements MVCRenderCommand {
     }
 
     @Reference
+    protected AssignmentPermission _assignmentPermission;
+
+    @Reference
     protected AssignmentService _assignmentService;
 
     @Reference
     private Portal _portal;
-
 }

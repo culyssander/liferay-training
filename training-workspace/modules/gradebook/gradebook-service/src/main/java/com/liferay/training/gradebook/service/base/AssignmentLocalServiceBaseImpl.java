@@ -132,10 +132,13 @@ public abstract class AssignmentLocalServiceBaseImpl
 	 *
 	 * @param assignment the assignment
 	 * @return the assignment that was removed
+	 * @throws PortalException
 	 */
 	@Indexable(type = IndexableType.DELETE)
 	@Override
-	public Assignment deleteAssignment(Assignment assignment) {
+	public Assignment deleteAssignment(Assignment assignment)
+		throws PortalException {
+
 		return assignmentPersistence.remove(assignment);
 	}
 

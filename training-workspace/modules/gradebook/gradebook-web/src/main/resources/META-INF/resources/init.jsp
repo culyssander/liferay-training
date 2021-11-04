@@ -22,6 +22,8 @@
  <%@ page import="com.liferay.training.gradebook.web.constants.MVCCommandNames"%>
  
   <%@ page import="com.liferay.portal.kernel.servlet.SessionErrors"%>
+  
+   <%@ taglib prefix="liferay-security" uri="http://liferay.com/tld/security" %>.
 
  <liferay-frontend:defineObjects />
 
