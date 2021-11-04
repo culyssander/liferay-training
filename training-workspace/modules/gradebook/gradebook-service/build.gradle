@@ -1,0 +1,13 @@
+dependencies {
+	compile project(":modules:gradebook:gradebook-api")
+
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+	compileOnly group: "javax.portlet", name: "portlet-api"
+	compileOnly group: "javax.servlet", name: "javax.servlet-api"
+}
+
+buildService {
+	apiDir = "../gradebook-api/src/main/java"
+}
+
+group = "com.liferay.training.gradebook"

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.3.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_3_0.dtd">
+
+<service-builder dependency-injector="ds" package-path="com.liferay.training.gradebook">
+	<namespace>Gradebook</namespace>
+	<!--<entity data-source="sampleDataSource" local-service="true" name="Foo" remote-service="false" session-factory="sampleSessionFactory" table="foo" tx-manager="sampleTransactionManager uuid="true"">-->
+	<entity name="Assignment" local-service="true">
+
+		<!-- PK fields -->
+
+		<column name="assignmentId" primary="true" type="long"></column>
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long"></column>
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long"></column>
+		<column name="userId" type="long"></column>
+		<column name="userName" type="String"></column>
+		<column name="createDate" type="Date"></column>
+		<column name="modifiedDate" type="Date"></column>
+        <column name="title" type="String" localized="true"></column>
+        <column localized="true" name="description" type="String"></column>
+        <column name="dueDate" type="Date"></column>
+        
+        <order by="asc">
+        	<order-column name="title"/>
+        </order>
+        
+        <finder return-type="Collection" name="GroupId">
+        	<finder-column name="groupId"></finder-column>
+        </finder>
+        
+        <reference entity="Group" package-path="com.liferay.portal"></reference>
+        
+        <reference entity="AssetEntry" package-path="com.liferay.portlet.asset"></reference>
+        
+        <reference entity="AssetLink" package-path="com.liferay.portlet.asset"></reference>
+        
+        <reference entity="AssetTag" package-path="com.liferay.portlet.asset"></reference>
+        
+	</entity>
+	
+	<exceptions>
+       	<exception>AssignmentValidation</exception>
+    </exceptions>
+</service-builder>
