@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.training.gradebook.model.Assignment;
@@ -41,188 +42,194 @@ import org.osgi.service.component.annotations.Reference;
  * The implementation of the assignment local service.
  *
  * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>com.liferay.training.gradebook.service.AssignmentLocalService</code> interface.
+ * All custom service methods should be put in this class. Whenever methods are
+ * added, rerun ServiceBuilder to copy their definitions into the
+ * <code>com.liferay.training.gradebook.service.AssignmentLocalService</code>
+ * interface.
  *
  * <p>
- * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
+ * This is a local service. Methods of this service will not have security
+ * checks based on the propagated JAAS credentials because this service can only
+ * be accessed from within the same VM.
  * </p>
  *
  * @author Brian Wing Shun Chan
  * @see AssignmentLocalServiceBaseImpl
  */
-@Component(
-	property = "model.class.name=com.liferay.training.gradebook.model.Assignment",
-	service = AopService.class
-)
+@Component(property = "model.class.name=com.liferay.training.gradebook.model.Assignment", service = AopService.class)
 public class AssignmentLocalServiceImpl extends AssignmentLocalServiceBaseImpl {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
-	 * Never reference this class directly. Use <code>com.liferay.training.gradebook.service.AssignmentLocalService</code> via injection or a <code>org.osgi.util.tracker.ServiceTracker</code> or use <code>com.liferay.training.gradebook.service.AssignmentLocalServiceUtil</code>.
+	 * Never reference this class directly. Use
+	 * <code>com.liferay.training.gradebook.service.AssignmentLocalService</code>
+	 * via injection or a <code>org.osgi.util.tracker.ServiceTracker</code> or use
+	 * <code>com.liferay.training.gradebook.service.AssignmentLocalServiceUtil</code
+	 * >.
 	 */
-	
-	public Assignment addAssignment(
-		     long groupId, Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-		     Date dueDate, ServiceContext serviceContext)
+
+	 private void updateAsset(
+		     Assignment assignment, ServiceContext serviceContext)
 		     throws PortalException {
 
-		     // Validate assignment parameters.
+		     assetEntryLocalService.updateEntry(
+		         serviceContext.getUserId(), serviceContext.getScopeGroupId(),
+		         assignment.getCreateDate(), assignment.getModifiedDate(),
+		         Assignment.class.getName(), assignment.getAssignmentId(),
+		         assignment.getUuid(), 0, serviceContext.getAssetCategoryIds(),
+		         serviceContext.getAssetTagNames(), true, true,
+		         assignment.getCreateDate(), null, null, null,
+		         ContentTypes.TEXT_HTML,
+		         assignment.getTitle(serviceContext.getLocale()),
+		         assignment.getDescription(serviceContext.getLocale()), null, null, null, 0, 0,
+		         serviceContext.getAssetPriority());
+	}
 
-		     _assignmentValidator.validate(titleMap, descriptionMap, dueDate);
+	public Assignment addAssignment(long groupId, Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			Date dueDate, ServiceContext serviceContext) throws PortalException {
 
-		     // Get group and user.
+		// Validate assignment parameters.
 
-		     Group group = groupLocalService.getGroup(groupId);
+		_assignmentValidator.validate(titleMap, descriptionMap, dueDate);
 
-		     long userId = serviceContext.getUserId();
+		// Get group and user.
 
-		     User user = userLocalService.getUser(userId);
+		Group group = groupLocalService.getGroup(groupId);
 
-		     // Generate primary key for the assignment.
+		long userId = serviceContext.getUserId();
 
-		     long assignmentId =
-		         counterLocalService.increment(Assignment.class.getName());
+		User user = userLocalService.getUser(userId);
 
-		     // Create assigment. This doesn't yet persist the entity.
+		// Generate primary key for the assignment.
 
-		     Assignment assignment = createAssignment(assignmentId);
+		long assignmentId = counterLocalService.increment(Assignment.class.getName());
 
-		     // Populate fields.
+		// Create assigment. This doesn't yet persist the entity.
 
-		     assignment.setCompanyId(group.getCompanyId());
-		     assignment.setCreateDate(serviceContext.getCreateDate(new Date()));
-		     assignment.setDueDate(dueDate);
-		     assignment.setDescriptionMap(descriptionMap);
-		     assignment.setGroupId(groupId);
-		     assignment.setModifiedDate(serviceContext.getModifiedDate(new Date()));
-		     assignment.setTitleMap(titleMap);
-		     assignment.setUserId(userId);
-		     assignment.setUserName(user.getScreenName());
+		Assignment assignment = createAssignment(assignmentId);
 
-		     // Persist assignment to database.
+		// Populate fields.
 
-		     assignment = super.addAssignment(assignment);
+		assignment.setCompanyId(group.getCompanyId());
+		assignment.setCreateDate(serviceContext.getCreateDate(new Date()));
+		assignment.setDueDate(dueDate);
+		assignment.setDescriptionMap(descriptionMap);
+		assignment.setGroupId(groupId);
+		assignment.setModifiedDate(serviceContext.getModifiedDate(new Date()));
+		assignment.setTitleMap(titleMap);
+		assignment.setUserId(userId);
+		assignment.setUserName(user.getScreenName());
 
-		     // Add permission resources.
+		// Persist assignment to database.
 
-		     boolean portletActions = false;
-		     boolean addGroupPermissions = true;
-		     boolean addGuestPermissions = true;
+		assignment = super.addAssignment(assignment);
 
-		     resourceLocalService.addResources(
-		         group.getCompanyId(), groupId, userId, Assignment.class.getName(),
-		         assignment.getAssignmentId(), portletActions, addGroupPermissions,
-		         addGuestPermissions);
+		// Add permission resources.
 
-		     return assignment;
+		boolean portletActions = false;
+		boolean addGroupPermissions = true;
+		boolean addGuestPermissions = true;
+
+		resourceLocalService.addResources(group.getCompanyId(), groupId, userId, Assignment.class.getName(),
+				assignment.getAssignmentId(), portletActions, addGroupPermissions, addGuestPermissions);
+
+		updateAsset(assignment, serviceContext);
+		
+		return assignment;
+	}
+
+	public Assignment updateAssignment(long assignmentId, Map<Locale, String> titleMap,
+			Map<Locale, String> descriptionMap, Date dueDate, ServiceContext serviceContext) throws PortalException {
+
+		// Validate assignment parameters.
+
+		_assignmentValidator.validate(titleMap, descriptionMap, dueDate);
+
+		// Get the Assignment by id.
+
+		Assignment assignment = getAssignment(assignmentId);
+
+		// Set updated fields and modification date.
+
+		assignment.setModifiedDate(new Date());
+		assignment.setTitleMap(titleMap);
+		assignment.setDueDate(dueDate);
+		assignment.setDescriptionMap(descriptionMap);
+
+		assignment = super.updateAssignment(assignment);
+		
+		updateAsset(assignment, serviceContext);
+
+		return assignment;
+	}
+
+	public Assignment deleteAssignment(Assignment assignment) throws PortalException {
+
+		// Delete permission resources.
+
+		resourceLocalService.deleteResource(assignment, ResourceConstants.SCOPE_INDIVIDUAL);
+
+		// Delete the Assignment
+		
+		assetEntryLocalService.deleteEntry(
+		         Assignment.class.getName(), assignment.getAssignmentId());
+
+		return super.deleteAssignment(assignment);
+	}
+
+	public List<Assignment> getAssignmentsByGroupId(long groupId) {
+
+		return assignmentPersistence.findByGroupId(groupId);
+	}
+
+	public List<Assignment> getAssignmentsByGroupId(long groupId, int start, int end) {
+
+		return assignmentPersistence.findByGroupId(groupId, start, end);
+	}
+
+	public List<Assignment> getAssignmentsByGroupId(long groupId, int start, int end,
+			OrderByComparator<Assignment> orderByComparator) {
+
+		return assignmentPersistence.findByGroupId(groupId, start, end, orderByComparator);
+	}
+
+	public List<Assignment> getAssignmentsByKeywords(long groupId, String keywords, int start, int end,
+			OrderByComparator<Assignment> orderByComparator) {
+
+		return assignmentLocalService.dynamicQuery(getKeywordSearchDynamicQuery(groupId, keywords), start, end,
+				orderByComparator);
+	}
+
+	public long getAssignmentsCountByKeywords(long groupId, String keywords) {
+		return assignmentLocalService.dynamicQueryCount(getKeywordSearchDynamicQuery(groupId, keywords));
+	}
+
+	private DynamicQuery getKeywordSearchDynamicQuery(long groupId, String keywords) {
+
+		DynamicQuery dynamicQuery = dynamicQuery().add(RestrictionsFactoryUtil.eq("groupId", groupId));
+
+		if (Validator.isNotNull(keywords)) {
+			Disjunction disjunctionQuery = RestrictionsFactoryUtil.disjunction();
+
+			disjunctionQuery.add(RestrictionsFactoryUtil.like("title", "%" + keywords + "%"));
+			disjunctionQuery.add(RestrictionsFactoryUtil.like("description", "%" + keywords + "%"));
+			dynamicQuery.add(disjunctionQuery);
 		}
 
-	
-	 public Assignment updateAssignment(
-		     long assignmentId, Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-		     Date dueDate, ServiceContext serviceContext)
-		     throws PortalException {
-		 
-		 	// Validate assignment parameters.
-
-	     	_assignmentValidator.validate(titleMap, descriptionMap, dueDate);
-
-		     // Get the Assignment by id.
-
-		     Assignment assignment = getAssignment(assignmentId);
-
-		     // Set updated fields and modification date.
-
-		     assignment.setModifiedDate(new Date());
-		     assignment.setTitleMap(titleMap);
-		     assignment.setDueDate(dueDate);
-		     assignment.setDescriptionMap(descriptionMap);
-
-		     assignment = super.updateAssignment(assignment);
-
-		     return assignment;
-	 }
-	 
-	 public Assignment deleteAssignment(Assignment assignment)
-		     throws PortalException {
-
-		     // Delete permission resources.
-
-		     resourceLocalService.deleteResource(
-		         assignment, ResourceConstants.SCOPE_INDIVIDUAL);
-
-		     // Delete the Assignment
-
-		     return super.deleteAssignment(assignment);
+		return dynamicQuery;
 	}
-	 
-	 public List<Assignment> getAssignmentsByGroupId(long groupId) {
 
-	     return assignmentPersistence.findByGroupId(groupId);
-	 }
+	@Override
+	public Assignment addAssignment(Assignment assignment) {
+		throw new UnsupportedOperationException("Not supported.");
+	}
 
-	 public List<Assignment> getAssignmentsByGroupId(
-	     long groupId, int start, int end) {
+	@Override
+	public Assignment updateAssignment(Assignment assignment) {
+		throw new UnsupportedOperationException("Not supported.");
+	}
 
-	     return assignmentPersistence.findByGroupId(groupId, start, end);
-	 }
-
-	 public List<Assignment> getAssignmentsByGroupId(
-	     long groupId, int start, int end,
-	     OrderByComparator<Assignment> orderByComparator) {
-
-	     return assignmentPersistence.findByGroupId(
-	         groupId, start, end, orderByComparator);
-	 }
-
-	 public List<Assignment> getAssignmentsByKeywords(
-	     long groupId, String keywords, int start, int end,
-	     OrderByComparator<Assignment> orderByComparator) {
-
-	     return assignmentLocalService.dynamicQuery(
-	         getKeywordSearchDynamicQuery(groupId, keywords), start, end,
-	         orderByComparator);
-	 }
-
-	 public long getAssignmentsCountByKeywords(long groupId, String keywords) {
-	     return assignmentLocalService.dynamicQueryCount(
-	         getKeywordSearchDynamicQuery(groupId, keywords));
-	 }
-
-	 private DynamicQuery getKeywordSearchDynamicQuery(
-	     long groupId, String keywords) {
-
-	     DynamicQuery dynamicQuery = dynamicQuery().add(
-	         RestrictionsFactoryUtil.eq("groupId", groupId));
-
-	     if (Validator.isNotNull(keywords)) {
-	         Disjunction disjunctionQuery =
-	             RestrictionsFactoryUtil.disjunction();
-
-	         disjunctionQuery.add(
-	             RestrictionsFactoryUtil.like("title", "%" + keywords + "%"));
-	         disjunctionQuery.add(
-	             RestrictionsFactoryUtil.like(
-	                 "description", "%" + keywords + "%"));
-	         dynamicQuery.add(disjunctionQuery);
-	     }
-
-	     return dynamicQuery;
-	 }
-	 
-	 
-	 @Override
-	 public Assignment addAssignment(Assignment assignment) {
-	     throw new UnsupportedOperationException("Not supported.");
-	 }
-
-	 @Override
-	 public Assignment updateAssignment(Assignment assignment) {
-	     throw new UnsupportedOperationException(
-	             "Not supported.");
-	 }
-	 
-	 @Reference
-	 AssignmentValidator _assignmentValidator;
+	@Reference
+	AssignmentValidator _assignmentValidator;
 }

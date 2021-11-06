@@ -21,9 +21,11 @@
  <%@ page import="com.liferay.training.gradebook.model.Assignment"%>
  <%@ page import="com.liferay.training.gradebook.web.constants.MVCCommandNames"%>
  
-  <%@ page import="com.liferay.portal.kernel.servlet.SessionErrors"%>
+ <%@ page import="com.liferay.portal.kernel.servlet.SessionErrors"%>
   
-   <%@ taglib prefix="liferay-security" uri="http://liferay.com/tld/security" %>.
+ <%@ taglib prefix="liferay-security" uri="http://liferay.com/tld/security" %>.
+ <%@ page import="com.liferay.asset.kernel.model.AssetRenderer"%>
+ <%@ page import="com.liferay.portal.kernel.util.WebKeys"%>
 
  <liferay-frontend:defineObjects />
 

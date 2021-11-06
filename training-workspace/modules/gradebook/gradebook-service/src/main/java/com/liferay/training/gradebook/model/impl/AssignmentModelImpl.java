@@ -16,6 +16,7 @@ package com.liferay.training.gradebook.model.impl;
 
 import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.expando.kernel.util.ExpandoBridgeFactoryUtil;
+import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.LocaleException;
@@ -30,8 +31,10 @@ import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.training.gradebook.model.Assignment;
 import com.liferay.training.gradebook.model.AssignmentModel;
 import com.liferay.training.gradebook.model.AssignmentSoap;
@@ -79,17 +82,21 @@ public class AssignmentModelImpl
 	public static final String TABLE_NAME = "Gradebook_Assignment";
 
 	public static final Object[][] TABLE_COLUMNS = {
-		{"assignmentId", Types.BIGINT}, {"groupId", Types.BIGINT},
-		{"companyId", Types.BIGINT}, {"userId", Types.BIGINT},
-		{"userName", Types.VARCHAR}, {"createDate", Types.TIMESTAMP},
-		{"modifiedDate", Types.TIMESTAMP}, {"title", Types.VARCHAR},
-		{"description", Types.VARCHAR}, {"dueDate", Types.TIMESTAMP}
+		{"uuid_", Types.VARCHAR}, {"assignmentId", Types.BIGINT},
+		{"groupId", Types.BIGINT}, {"companyId", Types.BIGINT},
+		{"userId", Types.BIGINT}, {"userName", Types.VARCHAR},
+		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP},
+		{"title", Types.VARCHAR}, {"description", Types.VARCHAR},
+		{"dueDate", Types.TIMESTAMP}, {"status", Types.INTEGER},
+		{"statusByUserId", Types.BIGINT}, {"statusByUserName", Types.VARCHAR},
+		{"statusDate", Types.TIMESTAMP}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
 		new HashMap<String, Integer>();
 
 	static {
+		TABLE_COLUMNS_MAP.put("uuid_", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("assignmentId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("groupId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
@@ -100,10 +107,14 @@ public class AssignmentModelImpl
 		TABLE_COLUMNS_MAP.put("title", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("dueDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("status", Types.INTEGER);
+		TABLE_COLUMNS_MAP.put("statusByUserId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("statusByUserName", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("statusDate", Types.TIMESTAMP);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table Gradebook_Assignment (assignmentId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,title STRING null,description STRING null,dueDate DATE null)";
+		"create table Gradebook_Assignment (uuid_ VARCHAR(75) null,assignmentId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,title STRING null,description STRING null,dueDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
 
 	public static final String TABLE_SQL_DROP =
 		"drop table Gradebook_Assignment";
@@ -123,14 +134,26 @@ public class AssignmentModelImpl
 	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
 	 */
 	@Deprecated
-	public static final long GROUPID_COLUMN_BITMASK = 1L;
+	public static final long COMPANYID_COLUMN_BITMASK = 1L;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
+	public static final long GROUPID_COLUMN_BITMASK = 2L;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
+	public static final long UUID_COLUMN_BITMASK = 4L;
 
 	/**
 	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
 	 *		#getColumnBitmask(String)}
 	 */
 	@Deprecated
-	public static final long TITLE_COLUMN_BITMASK = 2L;
+	public static final long TITLE_COLUMN_BITMASK = 8L;
 
 	/**
 	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
@@ -161,6 +184,7 @@ public class AssignmentModelImpl
 
 		Assignment model = new AssignmentImpl();
 
+		model.setUuid(soapModel.getUuid());
 		model.setAssignmentId(soapModel.getAssignmentId());
 		model.setGroupId(soapModel.getGroupId());
 		model.setCompanyId(soapModel.getCompanyId());
@@ -171,6 +195,10 @@ public class AssignmentModelImpl
 		model.setTitle(soapModel.getTitle());
 		model.setDescription(soapModel.getDescription());
 		model.setDueDate(soapModel.getDueDate());
+		model.setStatus(soapModel.getStatus());
+		model.setStatusByUserId(soapModel.getStatusByUserId());
+		model.setStatusByUserName(soapModel.getStatusByUserName());
+		model.setStatusDate(soapModel.getStatusDate());
 
 		return model;
 	}
@@ -320,6 +348,9 @@ public class AssignmentModelImpl
 		Map<String, BiConsumer<Assignment, ?>> attributeSetterBiConsumers =
 			new LinkedHashMap<String, BiConsumer<Assignment, ?>>();
 
+		attributeGetterFunctions.put("uuid", Assignment::getUuid);
+		attributeSetterBiConsumers.put(
+			"uuid", (BiConsumer<Assignment, String>)Assignment::setUuid);
 		attributeGetterFunctions.put(
 			"assignmentId", Assignment::getAssignmentId);
 		attributeSetterBiConsumers.put(
@@ -358,11 +389,57 @@ public class AssignmentModelImpl
 		attributeGetterFunctions.put("dueDate", Assignment::getDueDate);
 		attributeSetterBiConsumers.put(
 			"dueDate", (BiConsumer<Assignment, Date>)Assignment::setDueDate);
+		attributeGetterFunctions.put("status", Assignment::getStatus);
+		attributeSetterBiConsumers.put(
+			"status", (BiConsumer<Assignment, Integer>)Assignment::setStatus);
+		attributeGetterFunctions.put(
+			"statusByUserId", Assignment::getStatusByUserId);
+		attributeSetterBiConsumers.put(
+			"statusByUserId",
+			(BiConsumer<Assignment, Long>)Assignment::setStatusByUserId);
+		attributeGetterFunctions.put(
+			"statusByUserName", Assignment::getStatusByUserName);
+		attributeSetterBiConsumers.put(
+			"statusByUserName",
+			(BiConsumer<Assignment, String>)Assignment::setStatusByUserName);
+		attributeGetterFunctions.put("statusDate", Assignment::getStatusDate);
+		attributeSetterBiConsumers.put(
+			"statusDate",
+			(BiConsumer<Assignment, Date>)Assignment::setStatusDate);
 
 		_attributeGetterFunctions = Collections.unmodifiableMap(
 			attributeGetterFunctions);
 		_attributeSetterBiConsumers = Collections.unmodifiableMap(
 			(Map)attributeSetterBiConsumers);
+	}
+
+	@JSON
+	@Override
+	public String getUuid() {
+		if (_uuid == null) {
+			return "";
+		}
+		else {
+			return _uuid;
+		}
+	}
+
+	@Override
+	public void setUuid(String uuid) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_uuid = uuid;
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
+	public String getOriginalUuid() {
+		return getColumnOriginalValue("uuid_");
 	}
 
 	@JSON
@@ -417,6 +494,16 @@ public class AssignmentModelImpl
 		}
 
 		_companyId = companyId;
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
+	public long getOriginalCompanyId() {
+		return GetterUtil.getLong(
+			this.<Long>getColumnOriginalValue("companyId"));
 	}
 
 	@JSON
@@ -742,6 +829,173 @@ public class AssignmentModelImpl
 		_dueDate = dueDate;
 	}
 
+	@JSON
+	@Override
+	public int getStatus() {
+		return _status;
+	}
+
+	@Override
+	public void setStatus(int status) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_status = status;
+	}
+
+	@JSON
+	@Override
+	public long getStatusByUserId() {
+		return _statusByUserId;
+	}
+
+	@Override
+	public void setStatusByUserId(long statusByUserId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_statusByUserId = statusByUserId;
+	}
+
+	@Override
+	public String getStatusByUserUuid() {
+		try {
+			User user = UserLocalServiceUtil.getUserById(getStatusByUserId());
+
+			return user.getUuid();
+		}
+		catch (PortalException portalException) {
+			return "";
+		}
+	}
+
+	@Override
+	public void setStatusByUserUuid(String statusByUserUuid) {
+	}
+
+	@JSON
+	@Override
+	public String getStatusByUserName() {
+		if (_statusByUserName == null) {
+			return "";
+		}
+		else {
+			return _statusByUserName;
+		}
+	}
+
+	@Override
+	public void setStatusByUserName(String statusByUserName) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_statusByUserName = statusByUserName;
+	}
+
+	@JSON
+	@Override
+	public Date getStatusDate() {
+		return _statusDate;
+	}
+
+	@Override
+	public void setStatusDate(Date statusDate) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_statusDate = statusDate;
+	}
+
+	@Override
+	public StagedModelType getStagedModelType() {
+		return new StagedModelType(
+			PortalUtil.getClassNameId(Assignment.class.getName()));
+	}
+
+	@Override
+	public boolean isApproved() {
+		if (getStatus() == WorkflowConstants.STATUS_APPROVED) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isDenied() {
+		if (getStatus() == WorkflowConstants.STATUS_DENIED) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isDraft() {
+		if (getStatus() == WorkflowConstants.STATUS_DRAFT) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isExpired() {
+		if (getStatus() == WorkflowConstants.STATUS_EXPIRED) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isInactive() {
+		if (getStatus() == WorkflowConstants.STATUS_INACTIVE) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isIncomplete() {
+		if (getStatus() == WorkflowConstants.STATUS_INCOMPLETE) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isPending() {
+		if (getStatus() == WorkflowConstants.STATUS_PENDING) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isScheduled() {
+		if (getStatus() == WorkflowConstants.STATUS_SCHEDULED) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public long getColumnBitmask() {
 		if (_columnBitmask > 0) {
 			return _columnBitmask;
@@ -884,6 +1138,7 @@ public class AssignmentModelImpl
 	public Object clone() {
 		AssignmentImpl assignmentImpl = new AssignmentImpl();
 
+		assignmentImpl.setUuid(getUuid());
 		assignmentImpl.setAssignmentId(getAssignmentId());
 		assignmentImpl.setGroupId(getGroupId());
 		assignmentImpl.setCompanyId(getCompanyId());
@@ -894,6 +1149,10 @@ public class AssignmentModelImpl
 		assignmentImpl.setTitle(getTitle());
 		assignmentImpl.setDescription(getDescription());
 		assignmentImpl.setDueDate(getDueDate());
+		assignmentImpl.setStatus(getStatus());
+		assignmentImpl.setStatusByUserId(getStatusByUserId());
+		assignmentImpl.setStatusByUserName(getStatusByUserName());
+		assignmentImpl.setStatusDate(getStatusDate());
 
 		assignmentImpl.resetOriginalValues();
 
@@ -971,6 +1230,14 @@ public class AssignmentModelImpl
 	public CacheModel<Assignment> toCacheModel() {
 		AssignmentCacheModel assignmentCacheModel = new AssignmentCacheModel();
 
+		assignmentCacheModel.uuid = getUuid();
+
+		String uuid = assignmentCacheModel.uuid;
+
+		if ((uuid != null) && (uuid.length() == 0)) {
+			assignmentCacheModel.uuid = null;
+		}
+
 		assignmentCacheModel.assignmentId = getAssignmentId();
 
 		assignmentCacheModel.groupId = getGroupId();
@@ -1028,6 +1295,27 @@ public class AssignmentModelImpl
 		}
 		else {
 			assignmentCacheModel.dueDate = Long.MIN_VALUE;
+		}
+
+		assignmentCacheModel.status = getStatus();
+
+		assignmentCacheModel.statusByUserId = getStatusByUserId();
+
+		assignmentCacheModel.statusByUserName = getStatusByUserName();
+
+		String statusByUserName = assignmentCacheModel.statusByUserName;
+
+		if ((statusByUserName != null) && (statusByUserName.length() == 0)) {
+			assignmentCacheModel.statusByUserName = null;
+		}
+
+		Date statusDate = getStatusDate();
+
+		if (statusDate != null) {
+			assignmentCacheModel.statusDate = statusDate.getTime();
+		}
+		else {
+			assignmentCacheModel.statusDate = Long.MIN_VALUE;
 		}
 
 		return assignmentCacheModel;
@@ -1103,6 +1391,7 @@ public class AssignmentModelImpl
 
 	}
 
+	private String _uuid;
 	private long _assignmentId;
 	private long _groupId;
 	private long _companyId;
@@ -1116,8 +1405,14 @@ public class AssignmentModelImpl
 	private String _description;
 	private String _descriptionCurrentLanguageId;
 	private Date _dueDate;
+	private int _status;
+	private long _statusByUserId;
+	private String _statusByUserName;
+	private Date _statusDate;
 
 	public <T> T getColumnValue(String columnName) {
+		columnName = _attributeNames.getOrDefault(columnName, columnName);
+
 		Function<Assignment, Object> function = _attributeGetterFunctions.get(
 			columnName);
 
@@ -1144,6 +1439,7 @@ public class AssignmentModelImpl
 	private void _setColumnOriginalValues() {
 		_columnOriginalValues = new HashMap<String, Object>();
 
+		_columnOriginalValues.put("uuid_", _uuid);
 		_columnOriginalValues.put("assignmentId", _assignmentId);
 		_columnOriginalValues.put("groupId", _groupId);
 		_columnOriginalValues.put("companyId", _companyId);
@@ -1154,6 +1450,20 @@ public class AssignmentModelImpl
 		_columnOriginalValues.put("title", _title);
 		_columnOriginalValues.put("description", _description);
 		_columnOriginalValues.put("dueDate", _dueDate);
+		_columnOriginalValues.put("status", _status);
+		_columnOriginalValues.put("statusByUserId", _statusByUserId);
+		_columnOriginalValues.put("statusByUserName", _statusByUserName);
+		_columnOriginalValues.put("statusDate", _statusDate);
+	}
+
+	private static final Map<String, String> _attributeNames;
+
+	static {
+		Map<String, String> attributeNames = new HashMap<>();
+
+		attributeNames.put("uuid_", "uuid");
+
+		_attributeNames = Collections.unmodifiableMap(attributeNames);
 	}
 
 	private transient Map<String, Object> _columnOriginalValues;
@@ -1167,25 +1477,35 @@ public class AssignmentModelImpl
 	static {
 		Map<String, Long> columnBitmasks = new HashMap<>();
 
-		columnBitmasks.put("assignmentId", 1L);
+		columnBitmasks.put("uuid_", 1L);
 
-		columnBitmasks.put("groupId", 2L);
+		columnBitmasks.put("assignmentId", 2L);
 
-		columnBitmasks.put("companyId", 4L);
+		columnBitmasks.put("groupId", 4L);
 
-		columnBitmasks.put("userId", 8L);
+		columnBitmasks.put("companyId", 8L);
 
-		columnBitmasks.put("userName", 16L);
+		columnBitmasks.put("userId", 16L);
 
-		columnBitmasks.put("createDate", 32L);
+		columnBitmasks.put("userName", 32L);
 
-		columnBitmasks.put("modifiedDate", 64L);
+		columnBitmasks.put("createDate", 64L);
 
-		columnBitmasks.put("title", 128L);
+		columnBitmasks.put("modifiedDate", 128L);
 
-		columnBitmasks.put("description", 256L);
+		columnBitmasks.put("title", 256L);
 
-		columnBitmasks.put("dueDate", 512L);
+		columnBitmasks.put("description", 512L);
+
+		columnBitmasks.put("dueDate", 1024L);
+
+		columnBitmasks.put("status", 2048L);
+
+		columnBitmasks.put("statusByUserId", 4096L);
+
+		columnBitmasks.put("statusByUserName", 8192L);
+
+		columnBitmasks.put("statusDate", 16384L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}
